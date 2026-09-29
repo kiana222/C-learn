@@ -10,7 +10,7 @@
 @media(max-width:850px){.topin{gap:10px;padding:10px 14px;flex-wrap:wrap}.nav{order:3;flex-basis:100%;max-width:100%}.topmeta{margin-left:auto}.wrap{padding:0 14px 40px;margin-top:16px}.hero{padding:26px 21px}.grid.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.homegrid{grid-template-columns:1fr}.lessonlayout{grid-template-columns:1fr}.sidebar{position:relative;top:auto;max-height:265px}.roadmap{grid-template-columns:repeat(2,1fr)}.practicegrid{grid-template-columns:1fr}.compiler iframe{height:470px}}
 @media(max-width:480px){body{font-size:14px}.topmeta{font-size:11px}.nav button{padding:8px 10px;font-size:13px}.hero h1{font-size:29px}.grid.stats{gap:9px}.card{padding:14px}.stat b{font-size:22px}.sectionhead{align-items:start;flex-direction:column}.lessonbody h2{font-size:22px}.compiler iframe{height:430px}.table th,.table td{padding:9px 5px;font-size:12px}}
 .compiler-guide{margin:0 0 16px}.compiler-guide summary{cursor:pointer;font-size:18px;font-weight:800}.compiler-guide h3{font-size:16px;margin:20px 0 8px}.compiler-guide ol{padding-left:22px}.compiler-guide li{margin:7px 0}.compiler-guide code{background:#eef2f9;border-radius:5px;padding:1px 4px}.compiler-guide .codebox{margin:9px 0}.compiler-guide .codebox code{background:transparent;padding:0}
-.interview-answer{margin-top:12px;padding:10px 12px;background:#fff;border:1px solid #ead7ae;border-radius:9px}.interview-answer summary{list-style:none}.interview-answer summary::-webkit-details-marker{display:none}.interview-answer summary::after{content:" ↓"}.interview-answer[open] summary::after{content:" ↑"}.interview-answer p{margin:8px 0 0}</style>
+.interview-answer{margin-top:12px;padding:10px 12px;background:#fff;border:1px solid #ead7ae;border-radius:9px}.interview-answer summary{list-style:none}.interview-answer summary::-webkit-details-marker{display:none}.interview-answer summary::after{content:" ↓"}.interview-answer[open] summary::after{content:" ↑"}.interview-answer p{margin:8px 0 0}.lesson-check{margin:12px 0 18px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fbfcff}.lesson-check p{margin:8px 0 10px}.lesson-check textarea{width:100%;min-height:150px;border:1px solid #dce3ee;border-radius:10px;padding:10px;resize:vertical;font:13px/1.55 ui-monospace,Consolas,monospace;background:#fff}.lesson-check .toolbar{margin-top:9px}.lesson-check .answer pre{white-space:pre-wrap;word-break:break-word}.lesson-check .feedback{min-height:18px}</style>
 </head>
 <body>
 <header class="top"><div class="topin"><a class="brand" href="#home"><span class="logo">C</span><span>C 起步</span></a><nav class="nav" aria-label="主导航"><button data-page="home" class="active">首页</button><button data-page="lessons">语法教学</button><button data-page="practice">实操练习</button><button data-page="exam">模拟考试</button><button data-page="progress">学习进度</button></nav><span class="topmeta" id="topProgress">已完成 0 / 53 课</span></div></header>
@@ -37,6 +37,13 @@
 gcc -std=c11 -Wall -Wextra hello.c -o hello.exe
 ./hello.exe</code></pre>
 <p><code>cd</code> 进入练习目录；<code>gcc</code> 编译 C 源文件；<code>-std=c11</code> 选 C11 语言标准；<code>-Wall -Wextra</code> 显示常见警告；<code>-o hello.exe</code> 指定输出程序名；<code>./hello.exe</code> 运行当前目录的程序。第一次也可输入 <code>gcc --version</code> 确认编译器可用。</p>
+<h3>方法三：用 VS Code 编辑、编译和运行</h3>
+<ol>
+<li>双击 <code>E:\C\practice\用VSCode打开练习.cmd</code>，会直接用 VS Code 打开练习文件夹；再点击 <code>hello.c</code>。也可以打开 <code>E:\C\VSCode\Code.exe</code> 后手动选择“文件 → 打开文件夹”。</li>
+<li>编辑后按 <b>Ctrl+S</b> 保存，再按 <b>Ctrl+Shift+B</b>。终端会调用本机的 GCC 编译当前 C 文件，报错会显示在终端中。</li>
+<li>通过编译后，选择“终端 → 运行任务 → 运行当前程序”。这个任务会先编译再运行；需要键盘输入的程序，在终端里输入后按回车。</li>
+</ol>
+<p>VS Code 是代码编辑器，实际编译工作仍由 <code>E:\C\w64devkit\bin\gcc.exe</code> 完成。已将 <code>code</code> 和 <code>gcc</code> 加入当前用户 PATH；新开的终端才能直接使用这两个命令。</p>
 <h3>编译失败时怎么看</h3>
 <ol>
 <li>先找第一条含 <code>error:</code> 的信息，看它前面的文件名和行号。缺分号、括号不配对、变量名拼错很常见。</li>
@@ -48,7 +55,7 @@ gcc -std=c11 -Wall -Wextra hello.c -o hello.exe
 </details><div class="lessonlayout"><aside class="card sidebar"><input id="lessonSearch" class="search" placeholder="搜索课程标题…" aria-label="搜索课程"><div id="lessonList"></div></aside><article class="card lessonbody" id="lessonDetail"></article></div><div class="callout" style="margin-top:16px">进阶资料：<a href="https://dev.st.com/stm32cube-docs/stm32cubemx/6.18.0/en/docs/markup/CubeMX_UserManual/chapters/06_6_stm32cubemx_c_code_generation_overview.html" target="_blank" rel="noopener noreferrer">ST 的 CubeMX 代码生成说明</a>、<a href="https://arm-software.github.io/CMSIS_5/Core/html/group__Core__Register__gr.html" target="_blank" rel="noopener noreferrer">Arm CMSIS 核心寄存器文档</a>、<a href="https://gcc.gnu.org/onlinedocs/gcc/Volatiles.html" target="_blank" rel="noopener noreferrer">GCC 对 volatile 的说明</a>。这些是补充阅读，网站离线阅读不受影响。</div></section>
 <section class="page" id="page-practice"><div class="sectionhead"><div><h2>实操练习</h2><p>写好完整程序后提交；系统会编译运行，并将输出与题目测试用例核对。答错会保存到错题本，显示报错和参考示例，并提供最多 3 道递进仿题。</p></div><span class="tag" id="practiceCount">0 / 22 已掌握</span></div><div class="callout">提交代码会发送到 Wandbox 在线编译服务执行，需要联网。判题使用题目公开的示例测试，不等同于完整隐藏测试；勿提交隐私或密钥。该公共服务没有可用性保证，服务暂不可用时稍后重试。</div><div class="spacer"></div><div class="practicegrid" id="exerciseList"></div><div class="card" style="margin-top:16px"><b>判题流程</b><p class="muted" style="margin-bottom:0">每道题至少包含一个测试用例。原题全部通过才计入掌握进度；答错可先看报错和示例，再做仿题巩固，最后回到原题重新提交。</p></div></section>
 <section class="page" id="page-exam"><div class="sectionhead"><div><h2>模拟考试</h2><p>30 道单选题，覆盖基础语法、指针、内存和常见面试点。提交后查看答案和解析。</p></div><span class="tag amber">建议限时 25 分钟</span></div><div class="quiz card" id="quizArea"></div></section>
-<section class="page" id="page-progress"><div class="sectionhead"><div><h2>学习进度</h2><p>学习记录和错题保存在本机浏览器 localStorage。</p></div><button class="btn danger" id="resetData">清空本机学习记录</button></div><div class="grid stats"><div class="card stat"><div><b id="pLessons">0 / 53</b><span>课程完成</span></div><i class="stat-icon">课</i></div><div class="card stat"><div><b id="pExercises">0 / 22</b><span>练习掌握</span></div><i class="stat-icon">练</i></div><div class="card stat"><div><b id="pExams">0</b><span>已完成考试</span></div><i class="stat-icon">考</i></div><div class="card stat"><div><b id="pWrong">0</b><span>待复习错题</span></div><i class="stat-icon">记</i></div></div><div class="card" style="margin-top:15px"><div class="row"><div><h3 style="margin:0">总课程进度</h3><span class="muted">完成课程后会自动更新</span></div><b id="progressPct">0%</b></div><div class="progressbar" style="margin-top:12px"><i id="progressBar"></i></div></div><div class="card" style="margin-top:15px"><div class="sectionhead" style="margin-top:0"><div><h3 style="margin:0">错题本</h3><p>选择题可单题重做，仍答错会出现 3 轮仿题；实操题答错后可从这里返回原题。原题答对后自动移除。</p></div><button class="btn" id="clearWrong">清空错题本</button></div><div id="wrongList"></div><div id="wrongReview"></div></div><div class="card" style="margin-top:15px"><h3 style="margin:0 0 10px">阶段完成情况</h3><div id="phaseProgress"></div></div></section>
+<section class="page" id="page-progress"><div class="sectionhead"><div><h2>学习进度</h2><p>学习记录和错题保存在本机浏览器 localStorage。</p></div><button class="btn danger" id="resetData">清空本机学习记录</button></div><div class="grid stats"><div class="card stat"><div><b id="pLessons">0 / 53</b><span>课程完成</span></div><i class="stat-icon">课</i></div><div class="card stat"><div><b id="pExercises">0 / 22</b><span>练习掌握（含课堂题）</span></div><i class="stat-icon">练</i></div><div class="card stat"><div><b id="pExams">0</b><span>已完成考试</span></div><i class="stat-icon">考</i></div><div class="card stat"><div><b id="pWrong">0</b><span>待复习错题</span></div><i class="stat-icon">记</i></div></div><div class="card" style="margin-top:15px"><div class="row"><div><h3 style="margin:0">总课程进度</h3><span class="muted">完成课程后会自动更新</span></div><b id="progressPct">0%</b></div><div class="progressbar" style="margin-top:12px"><i id="progressBar"></i></div></div><div class="card" style="margin-top:15px"><div class="sectionhead" style="margin-top:0"><div><h3 style="margin:0">错题本</h3><p>选择题可单题重做，仍答错会出现 3 轮仿题；实操题与课堂题答错后可从这里返回原题。原题答对后自动移除。</p></div><button class="btn" id="clearWrong">清空错题本</button></div><div id="wrongList"></div><div id="wrongReview"></div></div><div class="card" style="margin-top:15px"><h3 style="margin:0 0 10px">阶段完成情况</h3><div id="phaseProgress"></div></div></section>
 <div class="footer">C 起步 · 单文件本地学习界面 · 进度仅保存在当前浏览器</div>
 </main><div class="toast" id="toast" role="status"></div>
 <script>
@@ -646,6 +653,177 @@ const interviewAnswers=[
 "编译链接只说明代码能生成固件，不能保证运行时地址、栈、时钟和外设操作正确。无效指针、栈溢出或错误寄存器访问等都可能引发 HardFault。",
 "无条件喂狗只证明主循环还在执行，不代表采样、通信等关键任务正常。应把喂狗与关键任务完成及健康检查关联起来。"
 ];
+const lessonChecks=[
+L("写一个输出 Hello, C! 的完整 C 程序。",String.raw`#include <stdio.h>
+int main(void){puts("Hello, C!");return 0;}`,[['','Hello, C!']], 'puts("Hello, C!");','puts("Hello, C!")',['puts']),
+L("读入整数、一个小数和一个字符，按原顺序输出，小数保留一位。",String.raw`#include <stdio.h>
+int main(void){int n;double v;char c;scanf("%d %lf %c",&n,&v,&c);printf("%d %.1f %c\n",n,v,c);return 0;}`,[['3 2.5 A','3 2.5 A'],['10 0.7 Z','10 0.7 Z']], 'printf("%d %.1f %c\\n",n,v,c)','printf("%d %.1f %c\\n",n,v-1.0,c)',['double','char']),
+L("读入两个整数，输出它们的和。",String.raw`#include <stdio.h>
+int main(void){int a,b;scanf("%d%d",&a,&b);printf("%d\n",a+b);return 0;}`,[['7 4','11'],['-3 9','6']], 'a+b','a-b',['scanf','&a','&b']),
+L("读入两个正整数，输出整数商和余数，中间一个空格。",String.raw`#include <stdio.h>
+int main(void){int a,b;scanf("%d%d",&a,&b);printf("%d %d\n",a/b,a%b);return 0;}`,[['7 3','2 1'],['10 4','2 2']], 'a%b','a/b',['/','%']),
+L("读入分数，达到 60 输出 pass，否则输出 fail。",String.raw`#include <stdio.h>
+int main(void){int n;scanf("%d",&n);puts(n>=60?"pass":"fail");return 0;}`,[['60','pass'],['59','fail'],['80','pass']], 'n>=60','n>60',['>=']),
+L("读入非负整数 n，用循环输出 1 到 n 的和。",String.raw`#include <stdio.h>
+int main(void){int n,sum=0;scanf("%d",&n);for(int i=1;i<=n;i++)sum+=i;printf("%d\n",sum);return 0;}`,[['5','15'],['0','0'],['10','55']], 'i<=n','i<n',['for']),
+L("读入 n，依次输出小于 n 的奇数；遇到 7 就停止。数字后面留一个空格。",String.raw`#include <stdio.h>
+int main(void){int n;scanf("%d",&n);for(int i=1;i<n;i++){if(i==7)break;if(i%2==0)continue;printf("%d ",i);}return 0;}`,[['9','1 3 5'],['6','1 3 5']], 'if(i%2==0)continue;','if(i%2==0)break;',['break','continue']),
+L("读入 5 个整数，使用数组求和并输出。",String.raw`#include <stdio.h>
+int main(void){int a[5],sum=0;for(int i=0;i<5;i++)scanf("%d",&a[i]);for(int i=0;i<5;i++)sum+=a[i];printf("%d\n",sum);return 0;}`,[['1 2 3 4 5','15'],['5 0 -1 0 6','10']], 'sum+=a[i]','sum+=a[0]',['[5]']),
+L("读入不超过 15 个字符的单词，输出可见字符数。",String.raw`#include <stdio.h>
+#include <string.h>
+int main(void){char s[16];scanf("%15s",s);printf("%zu\n",strlen(s));return 0;}`,[['cat','3'],['hello','5']], 'strlen(s)','sizeof(s)',['char','strlen']),
+L("读入两个单词，相同输出 equal，否则输出 diff。",String.raw`#include <stdio.h>
+#include <string.h>
+int main(void){char a[16],b[16];scanf("%15s%15s",a,b);puts(strcmp(a,b)==0?"equal":"diff");return 0;}`,[['cat cat','equal'],['cat dog','diff']], 'strcmp(a,b)==0','strcmp(a,b)!=0',['strcmp']),
+L("先声明后定义 add 函数，读入两个整数并输出它们的和。",String.raw`#include <stdio.h>
+int add(int,int);
+int main(void){int a,b;scanf("%d%d",&a,&b);printf("%d\n",add(a,b));return 0;}
+int add(int a,int b){return a+b;}`,[['2 5','7'],['-4 6','2']], 'return a+b;','return a-b;',['int add(int,int);']),
+L("写 square 函数，读入整数并输出它的平方。",String.raw`#include <stdio.h>
+int square(int x){return x*x;}
+int main(void){int n;scanf("%d",&n);printf("%d\n",square(n));return 0;}`,[['5','25'],['-3','9']], 'return x*x;','return x+x;',['square(']),
+L("用递归函数计算 0 到 8 的阶乘，读入 n 并输出 n!。",String.raw`#include <stdio.h>
+int fact(int n){if(n<=1)return 1;return n*fact(n-1);}
+int main(void){int n;scanf("%d",&n);printf("%d\n",fact(n));return 0;}`,[['3','6'],['0','1'],['5','120']], 'n*fact(n-1)','n+fact(n-1)',['fact(n-1)']),
+L("写一个跨调用保留计数的函数，读入 n，调用 n 次后输出计数值。",String.raw`#include <stdio.h>
+int next(void){static int count=0;return ++count;}
+int main(void){int n,value=0;scanf("%d",&n);for(int i=0;i<n;i++)value=next();printf("%d\n",value);return 0;}`,[['3','3'],['1','1'],['5','5']], 'static int count=0','int count=0',['static']),
+L("写函数通过指针把读入的整数变为两倍并输出。",String.raw`#include <stdio.h>
+void twice(int *p){*p*=2;}
+int main(void){int n;scanf("%d",&n);twice(&n);printf("%d\n",n);return 0;}`,[['3','6'],['-4','-8']], '*p*=2;','*p+=2;',['int *p','&n']),
+L("读入 4 个整数，用指针遍历数组求和。",String.raw`#include <stdio.h>
+int main(void){int a[4],sum=0;for(int i=0;i<4;i++)scanf("%d",&a[i]);int *p=a;for(int i=0;i<4;i++)sum+=*p++;printf("%d\n",sum);return 0;}`,[['1 2 3 4','10'],['-1 4 0 7','10']], 'sum+=*p++','sum+=*p',['int *p']),
+L("写 swap(int*,int*)，读入两个整数，交换后输出。",String.raw`#include <stdio.h>
+void swap(int *a,int *b){int t=*a;*a=*b;*b=t;}
+int main(void){int a,b;scanf("%d%d",&a,&b);swap(&a,&b);printf("%d %d\n",a,b);return 0;}`,[['5 2','2 5'],['-1 7','7 -1']], '*a=*b;','a=b;',['swap(&a,&b)']),
+L("写二级指针函数，让 p 从指向 a 改为指向 b，输出是否指向 b 以及 *p。",String.raw`#include <stdio.h>
+void point_to(int **p,int *target){*p=target;}
+int main(void){int a,b;scanf("%d%d",&a,&b);int *p=&a;point_to(&p,&b);printf("%d %d\n",p==&b,*p);return 0;}`,[['3 9','1 9'],['-1 7','1 7']], '*p=target;','p=&target;',['int **p']),
+L("定义包含 a、b 的结构体，读入两个整数后输出成员之和。",String.raw`#include <stdio.h>
+struct Pair{int a,b;};
+int main(void){struct Pair p;scanf("%d%d",&p.a,&p.b);printf("%d\n",p.a+p.b);return 0;}`,[['4 5','9'],['-2 7','5']], 'p.a+p.b','p.a-p.b',['struct Pair']),
+L("用结构体指针函数修改成员 value，读入整数并输出修改后的值。",String.raw`#include <stdio.h>
+struct Item{int value;};
+void set(struct Item *p,int x){p->value=x;}
+int main(void){int n;struct Item item={0};scanf("%d",&n);set(&item,n);printf("%d\n",item.value);return 0;}`,[['8','8'],['-3','-3']], 'p->value=x;','p->value=0;',['->']),
+L("定义 STOPPED、RUNNING 两个枚举状态，读入 0 或 1，输出 stop 或 run。",String.raw`#include <stdio.h>
+enum State{STOPPED,RUNNING};
+int main(void){int n;scanf("%d",&n);enum State mode=(enum State)n;puts(mode==RUNNING?"run":"stop");return 0;}`,[['1','run'],['0','stop']], 'mode==RUNNING','mode==STOPPED',['enum State']),
+L("定义带标签的联合体消息，标签 0 表示温度、1 表示错误码，读入标签和值后输出 temp=值 或 error=值。",String.raw`#include <stdio.h>
+union Data{int temperature;int error;};
+struct Message{int tag;union Data data;};
+int main(void){struct Message m;int value;scanf("%d%d",&m.tag,&value);if(m.tag==0){m.data.temperature=value;printf("temp=%d\n",m.data.temperature);}else{m.data.error=value;printf("error=%d\n",m.data.error);}return 0;}`,[['0 25','temp=25'],['1 7','error=7']], 'm.tag==0','m.tag!=0',['union Data']),
+L("用 typedef 定义 Pair 别名，读入两个整数并输出较大者。",String.raw`#include <stdio.h>
+typedef struct{int a,b;} Pair;
+int main(void){Pair p;scanf("%d%d",&p.a,&p.b);printf("%d\n",p.a>p.b?p.a:p.b);return 0;}`,[['8 3','8'],['-1 4','4']], 'p.a>p.b','p.a<p.b',['typedef']),
+L("读入无符号整数 x 和位号 k，输出第 k 位是否为 1。",String.raw`#include <stdio.h>
+int main(void){unsigned x,k;scanf("%u%u",&x,&k);puts((x&(1u<<k))?"1":"0");return 0;}`,[['8 1','0'],['8 3','1']], 'x&(1u<<k)','x|(1u<<k)',['&','<<']),
+L("定义带括号的 SQUARE 宏，读入 a、b，输出 (a+b) 的平方。",String.raw`#include <stdio.h>
+#define SQUARE(x) ((x)*(x))
+int main(void){int a,b;scanf("%d%d",&a,&b);printf("%d\n",SQUARE(a+b));return 0;}`,[['2 3','25'],['1 4','25']], '#define SQUARE(x) ((x)*(x))','#define SQUARE(x) (x*x)',['#define SQUARE']),
+L("定义 DEBUG 为 0，用条件编译让程序输出 release。",String.raw`#include <stdio.h>
+#define DEBUG 0
+int main(void){
+#if DEBUG
+puts("debug");
+#else
+puts("release");
+#endif
+return 0;}`,[['','release']], '#if DEBUG','#ifdef DEBUG',['#if DEBUG']),
+L("使用 const 上限 10，读入整数，超过上限就输出 10，否则输出原值。",String.raw`#include <stdio.h>
+int main(void){const int limit=10;int n;scanf("%d",&n);if(n>limit)n=limit;printf("%d\n",n);return 0;}`,[['3','3'],['20','10']], 'n>limit','n<limit',['const int']),
+L("写 static 局部变量计数函数，调用 3 次，依次输出每次返回值。",String.raw`#include <stdio.h>
+int tick(void){static int count=0;return ++count;}
+int main(void){int a=tick(),b=tick(),c=tick();printf("%d %d %d\n",a,b,c);return 0;}`,[['','1 2 3']], 'static int count=0','int count=0',['static']),
+L("读入 n 个整数，用 malloc 申请数组、求和并 free。",String.raw`#include <stdio.h>
+#include <stdlib.h>
+int main(void){int n;scanf("%d",&n);int *a=malloc((size_t)n*sizeof *a);if(!a)return 1;int sum=0;for(int i=0;i<n;i++){scanf("%d",&a[i]);sum+=a[i];}printf("%d\n",sum);free(a);return 0;}`,[['3 1 2 3','6'],['4 -1 3 5 0','7']], 'sum+=a[i]','sum+=a[0]',['malloc','free']),
+L("申请一个 int 保存输入值，释放后把指针置 NULL；输出原值和指针是否为空。",String.raw`#include <stdio.h>
+#include <stdlib.h>
+int main(void){int n;scanf("%d",&n);int *p=malloc(sizeof *p);if(!p)return 1;*p=n;int value=*p;free(p);p=NULL;printf("%d %d\n",value,p==NULL);return 0;}`,[['5','5 1'],['-2','-2 1']], 'p=NULL;','p=p;',['malloc','free','NULL']),
+L("用 tmpfile 写入一个整数，回到文件开头再读出并输出，最后关闭文件。",String.raw`#include <stdio.h>
+int main(void){int n,m=-1;scanf("%d",&n);FILE *f=tmpfile();if(!f)return 1;fprintf(f,"%d",n);rewind(f);fscanf(f,"%d",&m);fclose(f);printf("%d\n",m);return 0;}`,[['42','42'],['-7','-7']], 'rewind(f);','fflush(f);',['tmpfile','fclose']),
+L("先声明 calc，再在 main 后定义；calc 返回输入值加 10，输出调用结果。",String.raw`#include <stdio.h>
+int calc(int n);
+int main(void){int n;scanf("%d",&n);printf("%d\n",calc(n));return 0;}
+int calc(int n){return n+10;}`,[['5','15'],['-3','7']], 'return n+10;','return n-10;',['int calc(int n);']),
+L("用头文件保护宏风格包住 Sample 类型声明，读入整数并输出。",String.raw`#include <stdio.h>
+#ifndef SAMPLE_H
+#define SAMPLE_H
+typedef struct{int value;} Sample;
+#endif
+int main(void){Sample s;scanf("%d",&s.value);printf("%d\n",s.value);return 0;}`,[['8','8'],['-2','-2']], '#ifndef SAMPLE_H','#ifdef SAMPLE_H',['#ifndef','#endif']),
+L("读入一个十六进制 16 位数，以两位大写十六进制输出高字节和低字节。",String.raw`#include <stdio.h>
+int main(void){unsigned value;scanf("%x",&value);printf("%02X %02X\n",(value>>8)&255u,value&255u);return 0;}`,[['1234','12 34'],['ABCD','AB CD']], 'value>>8','value>>4',['>>','&']),
+L("读入 3 个整数，把它们放入单链表的 3 个节点，沿 next 求和。",String.raw`#include <stdio.h>
+struct Node{int value;struct Node *next;};
+int main(void){struct Node a,b,c;scanf("%d%d%d",&a.value,&b.value,&c.value);a.next=&b;b.next=&c;c.next=NULL;int sum=0;for(struct Node *p=&a;p;p=p->next)sum+=p->value;printf("%d\n",sum);return 0;}`,[['1 2 3','6'],['-1 4 7','10']], 'b.next=&c;','b.next=NULL;',['struct Node','next']),
+L("读入 n 和 n 个整数，先按栈的后进先出输出，再按队列的先进先出输出。",String.raw`#include <stdio.h>
+int main(void){int n,a[8];scanf("%d",&n);for(int i=0;i<n;i++)scanf("%d",&a[i]);printf("stack ");for(int i=n-1;i>=0;i--)printf("%d ",a[i]);printf("queue ");for(int i=0;i<n;i++)printf("%d ",a[i]);return 0;}`,[['3 1 2 3','stack 3 2 1 queue 1 2 3'],['2 8 4','stack 4 8 queue 8 4']], 'i=n-1;i>=0','i=n-1;i>0',['stack','queue']),
+L("读入 5 个整数和目标值，冒泡升序后输出 5 个数，再用二分查找输出目标下标，找不到输出 -1。",String.raw`#include <stdio.h>
+int main(void){int a[5],target;for(int i=0;i<5;i++)scanf("%d",&a[i]);scanf("%d",&target);for(int i=0;i<5;i++)for(int j=0;j<4-i;j++)if(a[j]>a[j+1]){int t=a[j];a[j]=a[j+1];a[j+1]=t;}for(int i=0;i<5;i++)printf("%d ",a[i]);int lo=0,hi=4,found=-1;while(lo<=hi){int mid=lo+(hi-lo)/2;if(a[mid]==target){found=mid;break;}if(a[mid]<target)lo=mid+1;else hi=mid-1;}printf("%d\n",found);return 0;}`,[['3 1 4 2 5 4','1 2 3 4 5 3'],['5 4 3 2 1 8','1 2 3 4 5 -1']], 'a[j]>a[j+1]','a[j]<a[j+1]',['while(lo<=hi)']),
+L("用普通 C 模拟板级初始化和应用步骤，先输出 init 再输出 step。",String.raw`#include <stdio.h>
+void board_init(void){puts("init");}
+void app_step(void){puts("step");}
+int main(void){board_init();app_step();return 0;}`,[['','init step']], 'board_init();app_step();','app_step();board_init();',['board_init']),
+L("读入 0 到 255 的整数，存入 uint8_t 后加 10，输出 8 位回绕结果。",String.raw`#include <stdio.h>
+#include <stdint.h>
+int main(void){unsigned n;scanf("%u",&n);uint8_t x=(uint8_t)n;printf("%u\n",(unsigned)(uint8_t)(x+10u));return 0;}`,[['250','4'],['255','9']], '(unsigned)(uint8_t)(x+10u)','(unsigned)(x+10u)',['uint8_t']),
+L("读入较大的无符号采样值，先转为 64 位再乘 3300、除 4095，输出整数结果。",String.raw`#include <stdio.h>
+int main(void){unsigned raw;scanf("%u",&raw);unsigned long long mv=(unsigned long long)raw*3300u/4095u;printf("%llu\n",mv);return 0;}`,[['2000000','1611721'],['4095','3300']], '(unsigned long long)raw*3300u','(unsigned long long)(raw*3300u)',['unsigned long long']),
+L("模拟寄存器置位：读入无符号整数，把第 5 位置 1，输出十进制结果。",String.raw`#include <stdio.h>
+int main(void){unsigned reg;scanf("%u",&reg);reg|=1u<<5;printf("%u\n",reg);return 0;}`,[['32','32'],['0','32']], 'reg|=1u<<5','reg^=1u<<5',['<<','|=']),
+L("模拟低电平有效按键：输入 0 表示按下，输出 LED 指令 1；输入 1 输出 0。",String.raw`#include <stdio.h>
+int main(void){int button;scanf("%d",&button);printf("%d\n",button==0?1:0);return 0;}`,[['0','1'],['1','0']], 'button==0','button!=0',['button']),
+L("读入采样个数和 0/1 采样序列，连续 3 次为 1 才确认按下；输出按下事件次数。",String.raw`#include <stdio.h>
+int main(void){int n,stable=0,candidate=0,count=0,events=0;scanf("%d",&n);for(int i=0;i<n;i++){int x;scanf("%d",&x);if(x!=candidate){candidate=x;count=1;}else if(count<3)count++;if(count>=3&&stable!=candidate){stable=candidate;if(stable)events++;}}printf("%d\n",events);return 0;}`,[['8 0 1 0 1 1 0 0 0','0'],['5 0 1 1 1 0','1']], 'count>=3','count>=2',['candidate','stable']),
+L("用 uint32_t 计数差判断是否到期：读入 last、now、period，输出 due 或 wait，需处理回绕。",String.raw`#include <stdio.h>
+#include <stdint.h>
+int main(void){uint32_t last,now,period;scanf("%u%u%u",&last,&now,&period);puts((uint32_t)(now-last)>=period?"due":"wait");return 0;}`,[['4294967280 32 40','due'],['10 30 25','wait']], '(uint32_t)(now-last)>=period','now>=last && now-last>=period',['uint32_t']),
+L("模拟共享计数器两次更新：每次都读取最新值再加一，读入初值后输出最终值。",String.raw`#include <stdio.h>
+int main(void){int n;scanf("%d",&n);volatile int count=n;int first=count;count=first+1;int second=count;count=second+1;printf("%d\n",count);return 0;}`,[['0','2'],['10','12']], 'int second=count;','int second=first;',['volatile']),
+L("实现容量 8、最多存 7 个整数的环形队列；读入 n 和 n 个整数，按出队顺序输出。",String.raw`#include <stdio.h>
+int main(void){int n,buf[8],head=0,tail=0;scanf("%d",&n);for(int i=0;i<n;i++){int x;scanf("%d",&x);int next=(head+1)%8;if(next!=tail){buf[head]=x;head=next;}}while(tail!=head){printf("%d ",buf[tail]);tail=(tail+1)%8;}return 0;}`,[['3 4 5 6','4 5 6'],['7 1 2 3 4 5 6 7','1 2 3 4 5 6 7']], 'next!=tail','next==tail',['head','tail']),
+L("读入 ADC 原始值、满量程值、参考电压毫伏，输出整数毫伏值。",String.raw`#include <stdio.h>
+#include <stdint.h>
+int main(void){unsigned raw,full,vref;scanf("%u%u%u",&raw,&full,&vref);uint32_t mv=(uint32_t)raw*vref/full;printf("%u\n",mv);return 0;}`,[['512 1023 5000','2502'],['2048 4095 3300','1650']], 'raw*vref/full','raw*3300u/4095u',['vref','full']),
+L("读入 PWM 比较值 cmp 和自动重装值 arr，输出整数占空比 cmp*100/(arr+1)。",String.raw`#include <stdio.h>
+int main(void){unsigned cmp,arr;scanf("%u%u",&cmp,&arr);printf("%u\n",cmp*100u/(arr+1u));return 0;}`,[['99 99','99'],['25 99','25']], 'arr+1u','arr',['cmp','arr']),
+L("读入两个十六进制字节，高字节在前，组合成 16 位数并输出十进制。",String.raw`#include <stdio.h>
+int main(void){unsigned hi,lo;scanf("%x%x",&hi,&lo);unsigned value=(hi<<8)|lo;printf("%u\n",value);return 0;}`,[['12 34','4660'],['00 FF','255']], '(hi<<8)|lo','(lo<<8)|hi',['<<','|']),
+L("写非阻塞任务到期判断：输入 now、last、period，达到周期输出 run，否则输出 wait。",String.raw`#include <stdio.h>
+#include <stdint.h>
+int main(void){uint32_t now,last,period;scanf("%u%u%u",&now,&last,&period);puts((uint32_t)(now-last)>=period?"run":"wait");return 0;}`,[['100 0 100','run'],['50 0 100','wait']], '>=period','>period',['now-last']),
+L("模拟 DMA 缓冲区：读入总长度、有效长度和全部数据，只求有效部分的和。",String.raw`#include <stdio.h>
+int main(void){int n,valid,a[16],sum=0;scanf("%d%d",&n,&valid);for(int i=0;i<n;i++)scanf("%d",&a[i]);for(int i=0;i<valid;i++)sum+=a[i];printf("%d\n",sum);return 0;}`,[['4 2 1 2 100 100','3'],['3 3 4 5 6','15']], 'i<valid','i<n',['valid']),
+L("模拟数组安全检查：读入下标，0 到 3 输出 safe，其余输出 invalid，避免越界。",String.raw`#include <stdio.h>
+int main(void){int index;scanf("%d",&index);puts(index>=0&&index<4?"safe":"invalid");return 0;}`,[['4','invalid'],['-1','invalid'],['3','safe']], 'index<4','index<=4',['index<4']),
+L("模拟看门狗喂狗条件：读入采样、通信、控制三项健康标志，全部为 1 才输出 feed，否则输出 hold。",String.raw`#include <stdio.h>
+int main(void){int sensor,uart,control;scanf("%d%d%d",&sensor,&uart,&control);puts(sensor&&uart&&control?"feed":"hold");return 0;}`,[['1 0 1','hold'],['1 1 1','feed']], 'sensor&&uart&&control','sensor||uart||control',['&&']),
+];
+function L(prompt,answer,cases,from,to,focus){return{prompt,answer,cases,broken:answer.replace(from,to),focus}}
+function lessonCheckCard(mode,check,i){
+const id=i+':'+mode,passed=state.lessonPractice.includes(id),pit=mode==='pit';
+return `<div class="lesson-check" id="lesson-${mode}-card"><div class="row"><b>${pit?'改错题':'编程题'}</b><span class="tag ${passed?'green':''}" id="lesson-${mode}-badge">${passed?'已通过':'待完成'}</span></div><p>${pit?'修复下面的错误代码，使它满足要求：':'不复制示例，从空白写出完整程序：'}${esc(check.prompt)}</p><textarea id="lesson-${mode}-code" spellcheck="false" aria-label="${pit?'改错题':'编程题'}代码">${pit?esc(check.broken):''}</textarea><div class="toolbar"><button class="btn primary" data-lesson-check="${mode}">编译并判题</button><span class="muted">重点：${esc(check.focus.join('、'))}</span></div><div class="feedback" id="lesson-${mode}-feedback"></div><details class="answer"><summary>查看参考代码</summary><pre>${esc(check.answer)}</pre></details></div>`
+}
+async function submitLessonCheck(i,mode){
+const check=lessonChecks[i],id=i+':'+mode,area=$('#lesson-'+mode+'-code'),button=$('[data-lesson-check="'+mode+'"]'),target=$('#lesson-'+mode+'-feedback'),code=area.value.trim();
+if(!code){target.innerHTML='<span class="wrong">先写完整 C 程序，再提交判题。</span>';return}
+button.disabled=true;button.textContent='正在编译和运行…';target.innerHTML='<span class="muted">正在发送到判题服务…</span>';
+const outcome=await judgeCode(code,mode==='pit'?[check.cases[0]]:check.cases);
+if(outcome.type==='pass'){
+if(!state.lessonPractice.includes(id))state.lessonPractice.push(id);
+state.lessonWrong=state.lessonWrong.filter(x=>x!==id);
+save();
+}else if(outcome.type!=='network'){
+state.lessonPractice=state.lessonPractice.filter(x=>x!==id);
+if(!state.lessonWrong.includes(id))state.lessonWrong.push(id);
+save();
+}
+if(target.isConnected){target.innerHTML=outcomeHtml(outcome,check.answer,false);const badge=$('#lesson-'+mode+'-badge');badge.textContent=outcome.type==='pass'?'已通过':'待完成';badge.classList.toggle('green',outcome.type==='pass');button.disabled=false;button.textContent='编译并判题'}
+toast(outcome.type==='pass'?'本题通过':outcome.type==='network'?'判题服务暂不可用':'还没通过，请看报错和参考代码');
+}
 const exercises=[
 {title:"1. 输出个人名片",topic:"输出与格式符",prompt:"声明一个 int 年龄和一个 char 姓名首字母，分别用 printf 输出。",keys:["int","char","printf"],answer:String.raw`#include <stdio.h>
 int main(void) {
@@ -997,7 +1175,7 @@ const quizSimilar=[
 [["队列按先进先出的顺序取出元素。",true],["栈按后进先出的顺序弹出元素。",true],["普通队列总是后入队的元素先出队。",false]],
 [["二分查找通常要求待查区间已排序。",true],["二分查找每轮可排除约一半候选元素。",true],["对未排序数组直接二分查找也一定正确。",false]]
 ];
-const KEY="cStart.v1";const blank=()=>({done:[],practice:[],exam:null,examCount:0,wrong:[],practiceWrong:[]});function load(){try{return Object.assign(blank(),JSON.parse(localStorage.getItem(KEY)||"{}"))}catch{return blank()}}let state=load();let selectedLesson=0,reviewIndex=-1,reviewRound=-1;
+const KEY="cStart.v1";const blank=()=>({done:[],practice:[],exam:null,examCount:0,wrong:[],practiceWrong:[],lessonPractice:[],lessonWrong:[]});function load(){try{return Object.assign(blank(),JSON.parse(localStorage.getItem(KEY)||"{}"))}catch{return blank()}}let state=load();let selectedLesson=0,reviewIndex=-1,reviewRound=-1;
 const $=s=>document.querySelector(s),$$=s=>Array.from(document.querySelectorAll(s));function save(){localStorage.setItem(KEY,JSON.stringify(state));renderProgress()}function toast(s){const t=$("#toast");t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800)}
 const pageScroll={};let pageSwitch=0;
 function showPage(name){
@@ -1013,8 +1191,9 @@ requestAnimationFrame(()=>{if(token===pageSwitch)window.scrollTo(0,pageScroll[na
 $$('.nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));$$('[data-go]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.go)));$('.brand').addEventListener('click',e=>{e.preventDefault();showPage('home')});
 function renderLessonList(filter=""){let html="",phaseNames={1:"第一阶段 · 基础语法",2:"第二阶段 · 核心语法",3:"第三阶段 · 进阶与面试重点",4:"第四阶段 · 数据结构",5:"第五阶段 · STM32 与电子信息"};[1,2,3,4,5].forEach(ph=>{const rows=lessons.map((x,i)=>({...x,i})).filter(x=>x.phase===ph&&x.title.toLowerCase().includes(filter.toLowerCase()));if(!rows.length)return;html+=`<div class="phasehead">${phaseNames[ph]}</div>`+rows.map(x=>`<button class="lessonlink ${selectedLesson===x.i?'sel':''} ${state.done.includes(x.i)?'done':''}" data-lesson="${x.i}"><span class="num">${state.done.includes(x.i)?'✓':x.i+1}</span><span>${esc(x.title)}</span></button>`).join("")});$("#lessonList").innerHTML=html;$$('[data-lesson]').forEach(b=>b.onclick=()=>{selectedLesson=Number(b.dataset.lesson);renderLessonList($("#lessonSearch").value);renderLesson()})}
 function renderLesson(){
-const l=lessons[selectedLesson],d=lessonDepth[selectedLesson]||l,done=state.done.includes(selectedLesson);
-$("#lessonDetail").innerHTML=`<div class="row"><span class="tag">第 ${selectedLesson+1} 课 · 阶段 ${l.phase}</span><span class="muted">共 ${lessons.length} 课</span></div><h2>${esc(l.title)}</h2><p class="lede">先读懂，再预测代码行为，最后自己写。</p>${l.phase===5?'<div class="callout">本课示例用普通 C 模拟单片机逻辑，可先在电脑编译；真实 STM32 的引脚、寄存器和驱动配置必须按具体型号与开发板资料调整。</div>':''}<h3>通俗解释</h3><div class="human">${esc(l.say)}</div><h3>深入理解</h3><p>${esc(d.why)}</p><h3>代码示例 <button class="btn codecopy" data-copy-lesson>复制代码</button></h3><pre class="codebox"><code>${esc(l.code)}</code></pre><h3>示例拆解</h3><p>${esc(d.walk)}</p><h3>关键点</h3><ul class="keylist">${l.keys.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><h3>容易踩坑</h3><div class="callout">${esc(d.pit)}</div><h3>自己动手</h3><div class="question">${esc(d.task)}</div><details class="answer"><summary>任务提示（先自己做）</summary><p>${esc(d.hint)}</p></details><h3>面试可能问</h3><div class="question">${esc(l.ask)}<details class="answer interview-answer"><summary>查看参考解答（电脑悬停 / 手机点击）</summary><p>${esc(interviewAnswers[selectedLesson])}</p></details></div><div class="actions"><button class="btn ${done?'':'primary'}" id="markLesson">${done?'✓ 已标记完成':'标记本课完成'}</button>${selectedLesson<lessons.length-1?`<button class="btn" id="nextLesson">下一课 →</button>`:''}</div>`;
+const l=lessons[selectedLesson],d=lessonDepth[selectedLesson]||l,done=state.done.includes(selectedLesson),check=lessonChecks[selectedLesson];
+$("#lessonDetail").innerHTML=`<div class="row"><span class="tag">第 ${selectedLesson+1} 课 · 阶段 ${l.phase}</span><span class="muted">共 ${lessons.length} 课</span></div><h2>${esc(l.title)}</h2><p class="lede">先读懂，再预测代码行为，最后自己写。</p>${l.phase===5?'<div class="callout">本课示例用普通 C 模拟单片机逻辑，可先在电脑编译；真实 STM32 的引脚、寄存器和驱动配置必须按具体型号与开发板资料调整。</div>':''}<h3>通俗解释</h3><div class="human">${esc(l.say)}</div><h3>深入理解</h3><p>${esc(d.why)}</p><h3>代码示例 <button class="btn codecopy" data-copy-lesson>复制代码</button></h3><pre class="codebox"><code>${esc(l.code)}</code></pre><h3>示例拆解</h3><p>${esc(d.walk)}</p><h3>关键点</h3><ul class="keylist">${l.keys.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><h3>容易踩坑</h3><div class="callout">${esc(d.pit)}</div>${lessonCheckCard("pit",check,selectedLesson)}<h3>自己动手</h3><div class="question">${esc(d.task)}</div><details class="answer"><summary>任务提示（先自己做）</summary><p>${esc(d.hint)}</p></details>${lessonCheckCard("task",check,selectedLesson)}<p class="muted">课堂题提交需要联网，代码会发送到线上编译服务；STM32 课程使用电脑可运行的模拟题。</p><h3>面试可能问</h3><div class="question">${esc(l.ask)}<details class="answer interview-answer"><summary>查看参考解答（电脑悬停 / 手机点击）</summary><p>${esc(interviewAnswers[selectedLesson])}</p></details></div><div class="actions"><button class="btn ${done?'':'primary'}" id="markLesson">${done?'✓ 已标记完成':'标记本课完成'}</button>${selectedLesson<lessons.length-1?`<button class="btn" id="nextLesson">下一课 →</button>`:''}</div>`;
+$$("#lessonDetail [data-lesson-check]").forEach(b=>b.onclick=()=>submitLessonCheck(selectedLesson,b.dataset.lessonCheck));
 const interview=$("#lessonDetail .interview-answer");
 interview.addEventListener("pointerenter",e=>{if(e.pointerType==="mouse")interview.open=true});
 interview.addEventListener("pointerleave",e=>{if(e.pointerType==="mouse")interview.open=false});
@@ -1071,16 +1250,18 @@ $("#wrongReviewFeedback").innerHTML=`<p class="${correct?'correct':'wrong'}">${c
 $("#nextWrongReview").onclick=()=>{reviewRound=variant?(reviewRound<2?reviewRound+1:-1):0;renderWrongReview()};
 }
 function renderProgress(){
-const n=state.done.length,p=state.practice.length,w=state.wrong.length+state.practiceWrong.length,pct=Math.round(100*n/lessons.length);
-$("#topProgress").textContent=`已完成 ${n} / ${lessons.length} 课`;$("#statLessons").textContent=`${n} / ${lessons.length}`;$("#statExercises").textContent=`${p} / ${exercises.length}`;$("#statBest").textContent=state.exam?`${state.exam.score} / ${state.exam.total}`:'—';$("#statWrong").textContent=w;$("#lessonCount").textContent=`${n} / ${lessons.length} 已完成`;$("#practiceCount").textContent=`${p} / ${exercises.length} 已掌握`;$("#homePct").textContent=pct+'%';$("#homeBar").style.width=pct+'%';$("#pLessons").textContent=`${n} / ${lessons.length}`;$("#pExercises").textContent=`${p} / ${exercises.length}`;$("#pExams").textContent=state.examCount||0;$("#pWrong").textContent=w;$("#progressPct").textContent=pct+'%';$("#progressBar").style.width=pct+'%';
+const n=state.done.length,p=state.practice.length,lp=state.lessonPractice.length,w=state.wrong.length+state.practiceWrong.length+state.lessonWrong.length,pct=Math.round(100*n/lessons.length);
+$("#topProgress").textContent=`已完成 ${n} / ${lessons.length} 课`;$("#statLessons").textContent=`${n} / ${lessons.length}`;$("#statExercises").textContent=`${p+lp} / ${exercises.length+lessonChecks.length*2}`;$("#statBest").textContent=state.exam?`${state.exam.score} / ${state.exam.total}`:'—';$("#statWrong").textContent=w;$("#lessonCount").textContent=`${n} / ${lessons.length} 已完成`;$("#practiceCount").textContent=`${p} / ${exercises.length} 已掌握`;$("#homePct").textContent=pct+'%';$("#homeBar").style.width=pct+'%';$("#pLessons").textContent=`${n} / ${lessons.length}`;$("#pExercises").textContent=`${p+lp} / ${exercises.length+lessonChecks.length*2}`;$("#pExams").textContent=state.examCount||0;$("#pWrong").textContent=w;$("#progressPct").textContent=pct+'%';$("#progressBar").style.width=pct+'%';
 const quizRows=state.wrong.map(i=>`<div class="qitem row"><div><span class="tag">选择题 ${i+1}</span><div>${questions[i].q}</div></div><button class="btn" data-redo-quiz="${i}">单题重做</button></div>`).join("");
 const codeRows=state.practiceWrong.map(i=>`<div class="qitem row"><div><span class="tag amber">实操题 ${i+1}</span><div>${exercises[i].title}</div></div><button class="btn" data-redo-code="${i}">返回原题</button></div>`).join("");
-$("#wrongList").innerHTML=w?`${quizRows?`<h4>模拟考试 · ${state.wrong.length} 题</h4>${quizRows}`:''}${codeRows?`<h4>实操练习 · ${state.practiceWrong.length} 题</h4>${codeRows}`:''}`:'<div class="empty">错题本还是空的。答错选择题或实操题后会保存在这里。</div>';
+const lessonRows=state.lessonWrong.map(id=>{const [i,mode]=id.split(':');return `<div class="qitem row"><div><span class="tag amber">课堂${mode==='pit'?'改错':'编程'}题 · 第 ${Number(i)+1} 课</span><div>${esc(lessons[Number(i)].title)}</div></div><button class="btn" data-redo-lesson="${id}">返回原题</button></div>`}).join('');
+$("#wrongList").innerHTML=w?`${quizRows?`<h4>模拟考试 · ${state.wrong.length} 题</h4>${quizRows}`:''}${codeRows?`<h4>实操练习 · ${state.practiceWrong.length} 题</h4>${codeRows}`:''}${lessonRows?`<h4>课堂练习 · ${state.lessonWrong.length} 题</h4>${lessonRows}`:''}`:'<div class="empty">错题本还是空的。答错选择题、实操题或课堂题后会保存在这里。</div>';
 $$('[data-redo-quiz]').forEach(b=>b.onclick=()=>{reviewIndex=Number(b.dataset.redoQuiz);reviewRound=-1;renderWrongReview()});
 $$('[data-redo-code]').forEach(b=>b.onclick=()=>{const i=Number(b.dataset.redoCode);showPage('practice');$("#exercise"+i).scrollIntoView({behavior:'smooth',block:'center'})});
+$$('[data-redo-lesson]').forEach(b=>b.onclick=()=>{const [i,mode]=b.dataset.redoLesson.split(':');selectedLesson=Number(i);showPage('lessons');renderLessonList($("#lessonSearch").value);renderLesson();requestAnimationFrame(()=>$("#lesson-"+mode+"-card").scrollIntoView({behavior:'smooth',block:'center'}))});
 $("#phaseProgress").innerHTML=[1,2,3,4,5].map(ph=>{const list=lessons.map((x,i)=>({...x,i})).filter(x=>x.phase===ph),c=list.filter(x=>state.done.includes(x.i)).length;return `<div style="padding:10px 0"><div class="row"><b>${['','第一阶段 · 基础语法','第二阶段 · 核心语法','第三阶段 · 进阶与面试重点','第四阶段 · 数据结构','第五阶段 · STM32 与电子信息'][ph]}</b><span class="muted">${c} / ${list.length}</span></div><div class="progressbar"><i style="width:${Math.round(c/list.length*100)}%"></i></div></div>`}).join('');
 }
-$("#lessonSearch").addEventListener('input',e=>renderLessonList(e.target.value));$("#resetData").onclick=()=>{if(confirm('确定清空当前浏览器保存的全部课程、练习和考试记录？此操作无法撤销。')){state=blank();reviewIndex=-1;reviewRound=-1;$("#wrongReview").innerHTML="";save();selectedLesson=0;renderLessonList();renderLesson();renderExercises();renderQuiz();toast('学习记录已清空')}};$("#clearWrong").onclick=()=>{state.wrong=[];state.practiceWrong=[];reviewIndex=-1;reviewRound=-1;$("#wrongReview").innerHTML="";save();toast('错题本已清空')};
+$("#lessonSearch").addEventListener('input',e=>renderLessonList(e.target.value));$("#resetData").onclick=()=>{if(confirm('确定清空当前浏览器保存的全部课程、练习和考试记录？此操作无法撤销。')){state=blank();reviewIndex=-1;reviewRound=-1;$("#wrongReview").innerHTML="";save();selectedLesson=0;renderLessonList();renderLesson();renderExercises();renderQuiz();toast('学习记录已清空')}};$("#clearWrong").onclick=()=>{state.wrong=[];state.practiceWrong=[];state.lessonWrong=[];reviewIndex=-1;reviewRound=-1;$("#wrongReview").innerHTML="";save();toast('错题本已清空')};
 renderLessonList();renderLesson();renderExercises();renderQuiz();renderProgress();
 </script>
 </body>
