@@ -1981,6 +1981,234 @@ $$('[data-redo-lesson]').forEach(b=>b.onclick=()=>{const [i,mode]=b.dataset.redo
 $("#phaseProgress").innerHTML=[1,2,3,4,5].map(ph=>{const list=lessons.map((x,i)=>({...x,i})).filter(x=>x.phase===ph),c=list.filter(x=>state.done.includes(x.i)).length;return `<div style="padding:10px 0"><div class="row"><b>${['','第一阶段 · 基础语法','第二阶段 · 核心语法','第三阶段 · 进阶与面试重点','第四阶段 · 数据结构','第五阶段 · STM32 与电子信息'][ph]}</b><span class="muted">${c} / ${list.length}</span></div><div class="progressbar"><i style="width:${Math.round(c/list.length*100)}%"></i></div></div>`}).join('');
 }
 $("#lessonSearch").addEventListener('input',e=>renderLessonList(e.target.value));$("#resetData").onclick=()=>{if(confirm('确定清空当前浏览器保存的全部课程、练习和考试记录？此操作无法撤销。')){state=blank();reviewIndex=-1;reviewRound=-1;$("#wrongReview").innerHTML="";save();selectedLesson=0;renderLessonList();renderLesson();renderExercises();renderQuiz();toast('学习记录已清空')}};$("#clearWrong").onclick=()=>{state.wrong=[];state.practiceWrong=[];state.lessonWrong=[];reviewIndex=-1;reviewRound=-1;$("#wrongReview").innerHTML="";save();toast('错题本已清空')};
+// Correct the shifted lesson fields in lessons 44–53.
+const phase5Corrections = [
+{walk:"last 接近计数器上限，now 已回绕到 32；用 uint32_t 的 now-last 计算经过的 48 个计数，再与 period 比较。",pit:"直接用 now>=last+period 判断可能在计数器回绕时出错；用 HAL_Delay 长时间阻塞也会耽误串口等任务。",task:"把 period 改成 50，先手算是否到期；再写两个互不阻塞的 100 ms、500 ms 周期任务的调度条件。",hint:"48<50，本次不触发。两个任务各保存自己的 last，并各自比较无符号时间差。"},
+{walk:"mock_irq_handler 只设置共享事件标志；主程序看到事件后清标志再处理。真实中断可能在读取和清除之间插入。",pit:"volatile 只约束访问优化，不保证 ++ 或读后清零的复合操作原子；中断里也不应做长时间 printf 或等待。",task:"画出 ISR 设置事件标志、主循环取走并处理的流程；指出读取和清零之间可能发生的竞争，并写一份 PC 模拟程序。",hint:"ISR 尽量只记录事件。真实板上可按芯片与编译器文档用临界区或原子交换取走事件。"},
+{walk:"head 指向下一次写入位置，tail 指向下一次读取位置；先算 next，若 next==tail 就是满，预留一格避免满空混淆。",pit:"满时继续覆盖会丢失尚未读取的数据；UART 收到的是字节流，一次回调也不一定刚好是一条消息。",task:"写容量为 8 的字节环形队列，预留一格；第 8 次连续 push 应返回失败，再依次 pop 出前 7 个字节。",hint:"先计算 (head+1)%8；等于 tail 就返回 0，不写入。非空时按 tail 读取并更新 tail。"},
+{walk:"四个采样值先用 uint32_t 累加，再除以样本数得到整数均值；毫伏换算仅在示例的 ADC 分辨率和参考电压下成立。",pit:"把 4095、3300 写死并用于所有板卡会造成错误换算；累加器太窄时先溢出再平均也无法补救。",task:"把示例改成读取 8 个 12 位采样值，求整数平均值；算出累加器最大可能值，并说明 uint32_t 是否足够。",hint:"最大和是 8×4095=32760；先累加后除以 8，若需毫伏还要确认实际参考电压。"},
+{walk:"先把百分比限制在 0–100，再扩大整数类型计算比较值；arr+1 表示本示例采用的周期计数。",pit:"把比较值 25 当成 25% 忽略了定时器周期；乘法若在较窄类型中先溢出，最后再转宽也无效。",task:"实现 duty_to_ticks(percent, arr)：百分比大于 100 时按 100 处理，使用足够宽的整数完成乘法并输出比较值。",hint:"先限制 percent，再计算 (uint64_t)percent*((uint64_t)arr+1)/100；具体硬件边界要查定时器模式。"},
+{walk:"示例先核对传输成功和收到长度，再把高字节左移 8 位，与低字节按位或组成 16 位数。",pit:"直接把字节缓冲区强转成 uint16_t* 读取会依赖主机大小端，还可能有对齐、别名与越界问题。",task:"把收到的高、低字节 0xAB、0xCD 组为 0xABCD，再反向拆回两个字节；写出解析前要检查的条件。",hint:"组包用 (high<<8)|low；拆包分别用 (value>>8)&0xFF 和 value&0xFF；先查错误码、长度和超时。"},
+{walk:"step 每次只处理一个事件。IDLE 收到事件进入 MEASURE；MEASURE 遇到超时优先进入 ERROR；ERROR 可在恢复事件后回到 IDLE。",pit:"在一个状态里阻塞等待会让其他事件无法及时处理；非法状态若直接忽略也会掩盖故障。",task:"给状态机加入 start、timeout、recover 三种事件；MEASURE 超时优先进入 ERROR，收到 recover 后才能回到 IDLE。",hint:"按当前状态分支，每次调用只推进一步；先写清超时优先级和非法状态处理。"},
+{walk:"只有确认 DMA 完成，CPU 才读取 received 指定的有效区间；其余缓冲区字节不能默认是这次的新数据。",pit:"完成标志不是缓存维护或同步的全部；DMA 与 CPU 同时写同一块缓冲区会产生所有权冲突。",task:"设计双缓冲的所有权交换：一块由 DMA 写入，另一块由 CPU 读取；写出完成回调与交换前后的检查步骤。",hint:"同一时刻每块缓冲区只给一方写。确认完成和有效长度后交换可读/可写角色；带缓存的芯片还要查一致性要求。"},
+{walk:"initialized_global 有初值，zero_global 默认清零；运行到 main 前，启动代码通常已完成相应初始化。实际落点查 map 文件。",pit:"PC 内存地址布局不能直接套到 STM32；只看到编译成功也不能证明时钟、启动向量、栈和外设访问正确。",task:"在自己的工程中找到启动文件、链接脚本和 map 文件，记录 Flash、RAM、栈顶及 main 入口的证据。",hint:"先确认完整芯片型号；查启动文件复位入口与向量表，查链接脚本内存区域，再用 map 文件核对段位置。"},
+{walk:"read_sensor 用返回值表示状态，用输出参数放新温度；主程序最多重试三次，只有关键任务成功才使用温度并模拟喂狗。",pit:"无超时等待会卡死主循环；无条件喂狗可能掩盖采样或通信任务已经失效，失败后继续用旧温度也不安全。",task:"为传感器读取加最多三次重试：成功使用新样本，连续失败则报告错误并进入安全状态，不再用旧温度。",hint:"计数器每失败一次加一；成功时标记样本有效并退出；失败达到 3 次后停止重试和喂狗。"}
+];
+phase5Corrections.forEach((content,index)=>Object.assign(lessons[index+43],content));
+
+// Seventy new questions; the existing 30 questions complete a 100-question bank.
+const extraQuestions = [
+Q("static 局部变量何时初始化？",["每次调用","通常只初始化一次","每次循环","链接后无法初始化"],1,"它的存储期贯穿程序，值可跨调用保留。","scope"),
+Q("普通局部数组离开所在块后通常怎样？",["继续永久有效","生命周期结束","自动变全局","自动写入文件"],1,"自动存储期对象在相应块结束后不再有效。","scope"),
+Q("extern int counter; 在别的源文件里常表示什么？",["定义第二份对象","声明外部对象","释放对象","把对象变常量"],1,"extern 声明可引用别处的唯一定义。","scope"),
+Q("文件作用域 static 函数通常能在哪里按名字调用？",["任意工程","当前源文件","仅头文件","只能中断中"],1,"文件作用域 static 限制外部链接。","scope"),
+Q("const int *p 主要限制什么？",["p 不能改指向","不能通过 p 修改所指 int","p 必须为 NULL","对象必须在 Flash"],1,"const 修饰的是通过 p 访问到的 int。","scope"),
+Q("int *const p=&x 主要限制什么？",["所指 int 不能改","p 不能改指向","p 不能解引用","x 一定是全局"],1,"const 修饰指针变量 p 自身。","scope"),
+Q("volatile 可以单独保证共享计数器 ++ 原子吗？",["总能","不能","仅 PC 能","仅 8 位能"],1,"volatile 不提供复合操作的原子性。","scope"),
+Q("向函数传入 &head 且 head 为 int*，形参应是什么类型？",["int","int*","int**","void"],2,"&head 是指向指针变量的地址，类型 int**。","pointer"),
+Q("函数返回普通局部变量地址后再解引用，主要风险是什么？",["变量自动变全局","生命周期已结束","数组自动增长","函数再次执行"],1,"离开函数后自动对象失效，地址成为悬空指针。","pointer"),
+Q("a[i] 与哪个表达式等价？",["*a+i","*(a+i)","&a+i","sizeof(a+i)"],1,"下标按指针加法再解引用定义。","pointer"),
+Q("数组作函数参数时，为什么常另传长度？",["参数会转为指针","长度一定为 0","数组不能传参","函数只认 char"],0,"数组形参不会自动带原数组元素个数。","pointer"),
+Q("解引用 p 前最基本的要求是？",["p 必须指向有效对象","p 必须是全局变量","p 必须大于 0","p 必须由 malloc 获得"],0,"指针来源、对象生命周期和访问范围都须有效。","pointer"),
+Q("p->score 等价于什么？",["p.score","(*p).score","*p.score","&p.score"],1,"箭头用于结构体指针访问成员。","pointer"),
+Q("free(p) 后把 p=NULL 能解决所有别名悬空吗？",["能","不能，其他别名仍旧悬空","会自动 free 别名","使 malloc 重新运行"],1,"置空只修改 p 这个指针变量。","pointer"),
+Q("设置 unsigned flags 的第 3 位，常用哪个式子？",["flags|=1u<<3","flags&=1u<<3","flags/=3","flags==3"],0,"按位或可把掩码覆盖的位置设为 1。","bit"),
+Q("清除 unsigned flags 的第 1 位，常用哪个式子？",["flags|=1u<<1","flags&=~(1u<<1)","flags^=0","flags&&=1"],1,"掩码取反后按位与只清目标位。","bit"),
+Q("测试 x 的第 k 位是否为 1，正确核心式子是？",["x&(1u<<k)","x|(1u<<k)","x+(1u<<k)","x&&(1u<<k)"],0,"按位与只保留掩码选中的位。","bit"),
+Q("无符号位移位数等于类型位宽时如何？",["总安全","行为未定义","自动回绕为 0 位","等于乘 2"],1,"移位位数必须小于操作数提升后类型的位宽。","bit"),
+Q("宏 SQUARE(x) 写成 ((x)*(x)) 时传入 i++ 的风险是？",["不会执行","实参可能求值两次","自动转换 double","编译器一定拒绝"],1,"宏展开会把实参复制到两个位置。","bit"),
+Q("#ifdef DEBUG 在 DEBUG 定义为 0 时结果是什么？",["真","假","编译错误","由输入决定"],0,"#ifdef 只看宏是否定义，不看值。","bit"),
+Q("#if DEBUG 在 DEBUG 定义为 0 时结果是什么？",["真","假","运行时决定","必然链接失败"],1,"#if 判断预处理表达式的数值。","bit"),
+Q("fopen(path,\"w\") 对已有文件通常会怎样？",["只读","覆盖原内容","从末尾追加","直接执行文件"],1,"w 模式创建或截断文件。","file"),
+Q("想把文本追加到文件末尾，fopen 常用哪种模式？",["r","a","rb","x"],1,"a 是追加写入模式。","file"),
+Q("fopen 失败后 FILE* 通常是什么？",["NULL","stdin","EOF","合法空文件"],0,"使用文件流前要先检查是否为 NULL。","file"),
+Q("用完已成功打开的 FILE* 应调用什么？",["free","fclose","closeall","delete"],1,"标准文件流由 fclose 关闭。","file"),
+Q("读一项整数时 fscanf 返回 1 表示什么？",["读到一个匹配项目","读到一个字节","文件总长 1","出错一次"],0,"返回值表示成功匹配并赋值的项目数。","file"),
+Q("PC 的 fopen 可以直接当 STM32 裸机串口发送吗？",["可以","不可以，接口与运行环境不同","只要加 volatile 就行","只要改后缀就行"],1,"无文件系统的工程需另用串口、Flash 等驱动。","file"),
+Q("tmpfile 成功返回的是什么？",["临时 FILE* 流","寄存器地址","静态数组","源文件名"],0,"临时文件流仍需检查返回值并关闭。","file"),
+Q("#include 与宏展开主要属于哪一阶段？",["链接","预处理","程序运行","下载烧录"],1,"预处理先处理头文件与宏。","build"),
+Q("语法中的缺分号通常在哪一阶段报告？",["编译","链接","运行后","烧录后"],0,"编译器解析 C 语法时发现缺分号。","build"),
+Q("undefined reference 常提示什么？",["链接找不到定义","输入格式错误","数组越界","串口未接线"],0,"声明存在不意味着定义已参与链接。","build"),
+Q("头文件保护宏主要防止什么？",["同一翻译单元重复包含","所有多重定义","堆溢出","时钟错误"],0,"保护宏防重复展开，不代替正确的定义位置。","build"),
+Q("跨文件共享全局变量的定义通常应有几份？",["0","1","每个头文件 1 份","每个函数 1 份"],1,"一个对象只在一个源文件里定义，其余处声明。","build"),
+Q("STM32 map 文件能帮助核对什么？",["段和符号的链接地址","按键电平","传感器精度","串口线长"],0,"map 文件体现链接后的布局与符号位置。","build"),
+Q("程序可编译却上板进 HardFault，最合理的下一步是？",["只改字体","检查调用栈和故障寄存器","删除全部头文件","禁用所有警告"],1,"运行时故障要结合异常现场、栈和地址定位。","build"),
+Q("uint8_t 保存 255 后加 1 再存回，结果通常是？",["0","255","256","-1"],0,"按 8 位无符号范围模 256 回绕。","timing"),
+Q("为什么 ADC 换算常要先转宽再乘？",["避免乘法中途溢出","让输入变字符串","让结果始终浮点","自动滤波"],0,"转换放在乘法后，溢出可能已经发生。","timing"),
+Q("用 uint32_t now-last 比较周期的好处是？",["可处理合理范围内计数回绕","永远不用配置时钟","自动消抖","自动修复断电"],0,"无符号减法按模计算经过计数。","timing"),
+Q("按键连续稳定次数与什么一起决定去抖时间？",["采样周期","变量名字","编译文件数量","LED 颜色"],0,"持续时间约为采样间隔乘稳定次数。","timing"),
+Q("事件只应在何时产生一次？",["每轮按下状态都产生","确认的松开到按下边沿","任何采样为 0","每次 printf 后"],1,"边沿事件避免长按不断重复触发。","timing"),
+Q("中断服务函数通常应怎样设计？",["尽量短并记录必要信息","等待所有外设完成","做长时间打印","循环直到复位"],0,"长 ISR 会阻碍其他中断和实时任务。","timing"),
+Q("周期任务用 HAL_Delay 长阻塞的主要代价是？",["其他任务响应被推迟","整数自动变浮点","数组消失","编译更快"],0,"非阻塞时间差判断更便于同时处理多个任务。","timing"),
+Q("GPIO 输入上拉与有效电平应先从哪里核对？",["板卡原理图与配置","字符串库","排序算法","文件后缀"],0,"接线与配置共同决定读到的电平含义。","gpio"),
+Q("板上 LED 低电平点亮时，写 0 表示什么？",["点亮","熄灭","重启 CPU","清除 Flash"],0,"有效电平由实际电路决定。","gpio"),
+Q("复制别人的 STM32 GPIO 引脚代码前最重要的是？",["确认芯片型号和板卡引脚","改变量为 double","增加 goto","先做冒泡排序"],0,"不同板卡的连线和可用引脚可能不同。","gpio"),
+Q("CubeMX 重新生成代码时，用户逻辑宜放在哪里？",["可保留区域或独立文件","任意生成区","固件二进制里","头文件注释里"],0,"生成区可能被覆盖，应按工程约定保留用户代码。","gpio"),
+Q("HAL、LL 与 CMSIS 的关系最恰当的是？",["不同抽象层级和定义接口","都是 Windows 编译器","都是字符串函数","都会自动确定 LED 接线"],0,"需要结合具体芯片、设备包和工程配置使用。","gpio"),
+Q("访问寄存器前要查什么？",["具体芯片手册的地址与位访问属性","屏幕分辨率","本机文件时间","浏览器标签数"],0,"寄存器可能有只读或写 1 清零等特殊语义。","gpio"),
+Q("volatile 寄存器变量能否替代硬件访问规则检查？",["能","不能","仅优化级别 0 能","仅 UART 能"],1,"volatile 不改变寄存器本身的读写语义。","gpio"),
+Q("ADC 原始值转毫伏需要确认哪两项？",["满量程与参考电压","键盘布局与字体","链表头尾","文件名和扩展名"],0,"换算常数必须来自实际 ADC 配置和参考电压。","analog"),
+Q("平均 8 个 12 位 ADC 值，最大累加和是？",["4095","8190","32760","65535"],2,"8×4095=32760。","analog"),
+Q("平均滤波能自动修复错误接线吗？",["能","不能","只在 uint8_t 上能","只在 DMA 上能"],1,"平均主要抑制部分随机波动。","analog"),
+Q("PWM 占空比 25% 对应 1000 计数周期中约多少高电平计数？",["25","250","500","1000"],1,"1000×25/100=250。","analog"),
+Q("PWM 比较值 25 是否总是 25% 占空比？",["是","否，取决于周期与模式","只在 C11 中是","只在 SPI 中是"],1,"比较值需结合 ARR、PWM 模式及极性解释。","analog"),
+Q("GPIO 能否直接驱动任意电机负载？",["能","不能，通常需要驱动电路","只需 volatile","只需 #define"],1,"引脚电流能力有限，应按电机与驱动器规格设计。","analog"),
+Q("PWM 计算中应先限制什么？",["百分比范围","函数名字长度","头文件数量","链接脚本后缀"],0,"先将占空比输入限制到 0–100%。","analog"),
+Q("协议规定高字节先传，收到 0x12、0x34 应还原为？",["0x1234","0x3412","0x1200","0x0034"],0,"高字节左移 8 位后与低字节合并。","protocol"),
+Q("直接把两个网络字节强转成 uint16_t* 的风险包括？",["字节序与对齐问题","自动校验成功","内存自动增长","必然高字节先"],0,"显式按字节组包更可移植。","protocol"),
+Q("SPI 设备模式应从哪里确认？",["器件数据手册","printf 返回值","数组下标","编译器版本号"],0,"时钟极性、相位等由器件协议规定。","protocol"),
+Q("I2C 解析接收缓冲区前首先应检查？",["传输结果和实际长度","结构体 sizeof","CPU 品牌","PWM 频率"],0,"失败或长度不足时不能继续按完整帧解析。","protocol"),
+Q("UART 环形队列 head==tail 常表示？",["空","满","半满","已重启"],0,"预留一格的方案用该关系表示空。","protocol"),
+Q("容量为 8、预留一格的环形缓冲区最多存几个字节？",["7","8","9","4"],0,"一格用于区分满与空。","protocol"),
+Q("UART 一次回调是否必然是一条完整消息？",["是","否，消息边界由协议定义","只要 DMA 就是","只要 printf 就是"],1,"UART 传的是字节流，需自行设计帧边界。","protocol"),
+Q("状态机一次 step 调用最适合做什么？",["按当前事件推进一步","阻塞直到所有事件结束","重置所有外设","一直循环到超时"],0,"每次只推进一步便于主循环响应其他事件。","system"),
+Q("MEASURE 状态遇到超时最合适的处理是？",["按设计进入错误或恢复状态","忽略超时永久等待","直接复用旧样本","无条件喂狗"],0,"超时要有明确的错误与恢复路径。","system"),
+Q("DMA 缓冲区何时可安全当作完整新数据读取？",["确认传输完成并核对有效长度后","启动前","任何时刻","看到数组非零时"],0,"CPU 与 DMA 之间要明确数据所有权。","system"),
+Q("带缓存的芯片使用 DMA 时可能还要处理什么？",["缓存一致性","字符串大小写","递归深度","文件换行"],0,"缓存维护要求随芯片架构与内存区域变化。","system"),
+Q("看门狗什么时候喂更合理？",["关键任务健康检查通过后","每轮无条件喂","传感器超时时一直喂","只在编译时喂"],0,"喂狗应证明关键任务仍正常完成。","system"),
+Q("传感器读取连续失败后应如何处理旧温度？",["标记无效并按策略处理","当作新样本","把变量改名","忽略返回值"],0,"失败时不能默默把旧数据当作新数据。","system"),
+Q("限次重试的好处是什么？",["防止永久卡在故障路径","保证所有硬件成功","自动提升 ADC 精度","替代错误码"],0,"重试次数达到上限后应报告故障或进入安全状态。","system")
+];
+function Q(q,o,a,e,group){return{q,o,a,e,group}}
+
+const examQuestionBank = questions.concat(extraQuestions);
+const examCodeLessons = [[2,4],[14,15],[23,28],[34,36],[42,49]];
+const examPapers = Array.from({length:5},(_,paper)=>({
+  name:`模拟卷 ${['一','二','三','四','五'][paper]}`,
+  questionIds:Array.from({length:20},(_,n)=>paper+n*5),
+  codeLessons:examCodeLessons[paper]
+}));
+let selectedPracticeLesson=0,selectedExam=0,examReview=null;
+const courseExerciseTotal=lessons.length*2;
+const practiceNames=['改错题','编程题'];
+const practiceModes=['pit','task'];
+const practiceCheck=(lesson,mode)=>mode==='pit'?lessonChecks[lesson]:lessonTaskChecks[lesson];
+$('#exerciseList').insertAdjacentHTML('beforebegin',`<div class="card" style="margin-bottom:16px"><div class="row"><div><h3 style="margin:0">逐课实操 · 106 题</h3><p class="muted" style="margin:2px 0 0">每课两题：改错与编程。与学习页的课堂题共用完成记录和错题本。</p></div><span class="tag">53 课 × 2</span></div><label for="practiceLessonSelect">选择课程</label><select id="practiceLessonSelect" class="search" style="margin:6px 0 12px"></select><h3 id="practiceLessonTitle" style="margin:2px 0 12px"></h3><div class="practicegrid" id="lessonPracticeList"></div></div><h3>综合练习 · ${exercises.length} 题</h3>`);
+$('#page-practice .sectionhead p').textContent=`逐课实操 ${courseExerciseTotal} 题，每课一题改错、一题编程；另有 ${exercises.length} 道综合题。在线编译后显示报错与参考答案。`;
+$('#page-practice > .card:last-child p').textContent='逐课题与教学页共用完成记录，答错可查看报错和参考代码；下方综合题答错后还会提供最多 3 道仿题。';
+$('#page-exam .sectionhead p').textContent='五套综合模拟卷；每套 20 道单选和 2 道 C 实操，提交后显示分数、答案与解析。';
+$('#page-exam .sectionhead .tag').textContent='每卷建议 35 分钟';
+$('#statBest').nextElementSibling.textContent='模拟考试最高分';
+document.head.insertAdjacentHTML('beforeend','<style>.exam-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.exam-code textarea{display:block;width:100%;min-height:170px;max-width:100%;border:1px solid #dce3ee;border-radius:10px;padding:10px;resize:vertical;font:13px/1.55 ui-monospace,Consolas,monospace;background:#fbfcff}.exam-code p{overflow-wrap:anywhere}#practiceLessonSelect{display:block;margin-top:4px}</style>');
+
+function renderLessonPractice(){
+  const select=$('#practiceLessonSelect'),list=$('#lessonPracticeList');
+  if(!select||!list)return;
+  select.innerHTML=lessons.map((l,i)=>`<option value="${i}" ${i===selectedPracticeLesson?'selected':''}>第 ${i+1} 课 · ${esc(l.title)}</option>`).join('');
+  select.onchange=()=>{selectedPracticeLesson=Number(select.value);renderLessonPractice()};
+  const i=selectedPracticeLesson;
+  $('#practiceLessonTitle').textContent=`第 ${i+1} 课 · ${lessons[i].title}`;
+  list.innerHTML=practiceModes.map((mode,k)=>{
+    const check=practiceCheck(i,mode),passed=state.lessonPractice.includes(i+':'+mode);
+    return `<article class="card exercise" id="courseExercise${k}"><div class="row"><span class="tag">${practiceNames[k]}</span><span class="tag ${passed?'green':''}">${passed?'已通过':'待完成'}</span></div><h3 style="margin-top:10px">${practiceNames[k]}：${esc(lessons[i].title)}</h3><p>${esc(check.prompt)}</p><textarea id="courseCode${k}" spellcheck="false" aria-label="${practiceNames[k]}代码" placeholder="写完整 C 程序…">${mode==='pit'?esc(check.broken):''}</textarea><div class="toolbar" style="margin-top:8px"><button class="btn primary" data-course-submit="${k}">编译并判题</button><span class="muted">重点：${esc(check.focus.join('、'))}</span></div><div class="feedback" id="courseFeedback${k}"></div><details class="answer"><summary>参考代码</summary><pre>${esc(check.answer)}</pre></details></article>`
+  }).join('');
+  $$('[data-course-submit]').forEach(button=>button.onclick=()=>submitCourseExercise(i,Number(button.dataset.courseSubmit)));
+}
+async function submitCourseExercise(i,k){
+  const mode=practiceModes[k],check=practiceCheck(i,mode),code=$('#courseCode'+k).value.trim(),button=$(`[data-course-submit="${k}"]`),target=$('#courseFeedback'+k);
+  if(!code){target.innerHTML='<span class="wrong">先写完整 C 程序。</span>';return}
+  button.disabled=true;button.textContent='正在编译…';target.textContent='正在发送到在线判题服务…';
+  const outcome=await judgeCode(code,mode==='pit'?[check.cases[0]]:check.cases);
+  if(outcome.type==='pass'){
+    const id=i+':'+mode;
+    if(!state.lessonPractice.includes(id))state.lessonPractice.push(id);
+    state.lessonWrong=state.lessonWrong.filter(value=>value!==id);
+    save();
+    button.closest('.exercise').querySelector('.row .tag:last-child').textContent='已通过';
+    button.closest('.exercise').querySelector('.row .tag:last-child').classList.add('green');
+  }else if(outcome.type!=='network'){
+    const id=i+':'+mode;
+    state.lessonPractice=state.lessonPractice.filter(value=>value!==id);
+    if(!state.lessonWrong.includes(id))state.lessonWrong.push(id);
+    save();
+  }
+  target.innerHTML=outcomeHtml(outcome,check.answer,false);
+  button.disabled=false;button.textContent='编译并判题';
+  toast(outcome.type==='pass'?'本题通过':outcome.type==='network'?'判题服务暂不可用':'请查看报错与参考代码');
+}
+const renderExercisesOriginal=renderExercises;
+renderExercises=function(){renderExercisesOriginal();renderLessonPractice()};
+
+function examDraft(paper){return state.examDrafts?.[paper]||{answers:Array(20).fill(-1),codes:['','']}}
+function saveExamDraft(){
+  const answers=Array.from({length:20},(_,i)=>{const input=$(`input[name="examChoice${i}"]:checked`);return input?Number(input.value):-1});
+  const codes=[0,1].map(i=>$(`#examCode${i}`)?.value||'');
+  state.examDrafts=state.examDrafts||{};state.examDrafts[selectedExam]={answers,codes};
+  localStorage.setItem(KEY,JSON.stringify(state));
+}
+function examCodeCheck(paper,k){const lesson=examPapers[paper].codeLessons[k];return k===0?lessonChecks[lesson]:lessonTaskChecks[lesson]}
+function renderQuizV2(){
+  const area=$('#quizArea'),paper=examPapers[selectedExam],draft=examDraft(selectedExam),record=state.examPapers?.[selectedExam];
+  area.innerHTML=`<div class="exam-tabs">${examPapers.map((p,i)=>`<button class="btn ${i===selectedExam?'primary':''}" data-exam-paper="${i}">${p.name}${state.examPapers?.[i]?' ✓':''}</button>`).join('')}</div><div class="row"><div><h3 style="margin:12px 0 2px">${paper.name}</h3><span class="muted">20 道单选，每题 1 分；2 道 C 实操，每题 5 分，共 30 分。代码题联网编译判分。</span></div><span class="tag">建议 35 分钟</span></div><div id="questionRows">${paper.questionIds.map((qid,i)=>{const q=examQuestionBank[qid];return `<div class="qitem" id="examQuestion${i}"><h3>${i+1}. ${esc(q.q)}</h3>${q.o.map((option,j)=>`<label class="option"><input type="radio" name="examChoice${i}" value="${j}" ${draft.answers?.[i]===j?'checked':''}><span>${String.fromCharCode(65+j)}. ${esc(option)}</span></label>`).join('')}</div>`}).join('')}</div><h3>实操部分</h3>${paper.codeLessons.map((lesson,k)=>{const check=examCodeCheck(selectedExam,k);return `<div class="qitem exam-code"><b>实操 ${k+1} · 第 ${lesson+1} 课 ${esc(lessons[lesson].title)}</b><p>${esc(check.prompt)}</p><textarea id="examCode${k}" spellcheck="false" placeholder="写完整 C 程序…">${esc(draft.codes?.[k]||'')}</textarea><details class="answer"><summary>参考代码（建议提交后查看）</summary><pre>${esc(check.answer)}</pre></details></div>`}).join('')}<div class="actions"><button class="btn primary" id="submitExamV2">提交整套试卷</button><button class="btn" id="resetExamV2">清空本卷草稿</button></div><div id="examStatus" class="feedback"></div><div id="examResult"></div>`;
+  $$('[data-exam-paper]').forEach(button=>button.onclick=()=>{saveExamDraft();selectedExam=Number(button.dataset.examPaper);renderQuiz()});
+  $$('#quizArea input, #quizArea textarea').forEach(el=>el.addEventListener('change',saveExamDraft));
+  $$('#quizArea textarea').forEach(el=>el.addEventListener('input',saveExamDraft));
+  $('#submitExamV2').onclick=submitExamV2;
+  $('#resetExamV2').onclick=()=>{if(!confirm('清空这份试卷的未提交草稿？已保存成绩不会删除。'))return;state.examDrafts=state.examDrafts||{};delete state.examDrafts[selectedExam];save();renderQuiz()};
+  if(record)renderExamResultV2(record);
+}
+async function submitExamV2(){
+  saveExamDraft();
+  const paper=examPapers[selectedExam],draft=examDraft(selectedExam),firstBlank=draft.answers.indexOf(-1);
+  if(firstBlank>=0){toast(`第 ${firstBlank+1} 道选择题未作答`);$(`#examQuestion${firstBlank}`).scrollIntoView({behavior:'smooth',block:'center'});return}
+  const codeBlank=draft.codes.findIndex(code=>!code.trim());
+  if(codeBlank>=0){toast(`实操 ${codeBlank+1} 尚未写代码`);$(`#examCode${codeBlank}`).scrollIntoView({behavior:'smooth',block:'center'});return}
+  const button=$('#submitExamV2'),status=$('#examStatus');button.disabled=true;button.textContent='正在判分…';
+  const codeResults=[];
+  for(let k=0;k<2;k++){
+    status.textContent=`正在编译并运行实操 ${k+1} / 2…`;
+    const check=examCodeCheck(selectedExam,k),outcome=await judgeCode(draft.codes[k],check.cases);
+    if(outcome.type==='network'){status.innerHTML=`<span class="wrong">在线判题未完成：${esc(outcome.message)}。本次不记分，请稍后重试。</span>`;button.disabled=false;button.textContent='提交整套试卷';return}
+    codeResults.push(outcome);
+  }
+  const missed=paper.questionIds.map((qid,i)=>draft.answers[i]===examQuestionBank[qid].a?null:i).filter(i=>i!==null);
+  const score=20-missed.length+codeResults.filter(result=>result.type==='pass').length*5;
+  const record={answers:draft.answers.slice(),codes:draft.codes.slice(),codeResults,score,total:30,at:new Date().toISOString()};
+  state.examPapers=state.examPapers||{};state.examPapers[selectedExam]=record;
+  state.examWrongV2=(state.examWrongV2||[]).filter(id=>!id.startsWith(selectedExam+':'));
+  missed.forEach(i=>state.examWrongV2.push(`${selectedExam}:q:${i}`));
+  codeResults.forEach((result,k)=>{if(result.type!=='pass')state.examWrongV2.push(`${selectedExam}:c:${k}`)});
+  state.examCount=(state.examCount||0)+1;
+  save();renderQuiz();$('#examResult').scrollIntoView({behavior:'smooth',block:'start'});
+  toast(`${paper.name}：${score} / 30 分`);
+}
+function renderExamResultV2(record){
+  const paper=examPapers[selectedExam];
+  $('#examResult').innerHTML=`<div class="result"><h3>本卷得分：${record.score} / 30</h3><span class="muted">选择题 ${paper.questionIds.filter((qid,i)=>record.answers[i]===examQuestionBank[qid].a).length} / 20；实操题 ${record.codeResults.filter(r=>r.type==='pass').length} / 2。${new Date(record.at).toLocaleString()}</span></div><h3>选择题解析</h3>${paper.questionIds.map((qid,i)=>{const q=examQuestionBank[qid],correct=record.answers[i]===q.a;return `<div class="explain ${correct?'ok':'bad'}"><b>${i+1}. ${esc(q.q)}</b><div>正确答案：${String.fromCharCode(65+q.a)}. ${esc(q.o[q.a])}；你的答案：${String.fromCharCode(65+record.answers[i])}. ${esc(q.o[record.answers[i]])}</div><div>${esc(q.e)}</div></div>`}).join('')}<h3>实操题结果</h3>${paper.codeLessons.map((lesson,k)=>{const check=examCodeCheck(selectedExam,k),result=record.codeResults[k];return `<div class="explain ${result.type==='pass'?'ok':'bad'}"><b>实操 ${k+1} · ${esc(lessons[lesson].title)} · ${result.type==='pass'?'通过':'未通过'}</b>${outcomeHtml(result,check.answer,false)}</div>`}).join('')}`;
+}
+renderQuiz=renderQuizV2;
+
+const renderProgressOriginal=renderProgress;
+renderProgress=function(){
+  renderProgressOriginal();
+  const newWrong=state.examWrongV2||[],oldWrong=state.wrong.length+state.practiceWrong.length+state.lessonWrong.length;
+  $('#statWrong').textContent=oldWrong+newWrong.length;$('#pWrong').textContent=oldWrong+newWrong.length;
+  $('#practiceCount').textContent=`${state.lessonPractice.length+state.practice.length} / ${courseExerciseTotal+exercises.length} 已掌握`;
+  const scores=Object.values(state.examPapers||{}).map(record=>record.score);
+  if(state.exam?.score!==undefined)scores.push(state.exam.score);
+  $('#statBest').textContent=scores.length?`${Math.max(...scores)} / 30`:'—';
+  if(newWrong.length){
+    const list=$('#wrongList');
+    if(!oldWrong)list.innerHTML='';
+    list.insertAdjacentHTML('beforeend',`<h4>五套模拟卷 · ${newWrong.length} 题</h4>${newWrong.map(id=>{const [paper,type,index]=id.split(':').map((part,j)=>j===1?part:Number(part));const q=type==='q'?examQuestionBank[examPapers[paper].questionIds[index]]:null;return `<div class="qitem row"><div><span class="tag amber">${examPapers[paper].name} · ${type==='q'?'选择题 '+(index+1):'实操题 '+(index+1)}</span><div>${q?esc(q.q):esc(examCodeCheck(paper,index).prompt)}</div></div><button class="btn" data-exam-wrong="${id}">${type==='q'?'单题重做':'返回试卷'}</button></div>`}).join('')}`);
+    $$('[data-exam-wrong]').forEach(button=>button.onclick=()=>{const id=button.dataset.examWrong;if(id.includes(':q:')){reviewIndex=-1;examReview={id,round:-1};renderExamWrongReview()}else{selectedExam=Number(id.split(':')[0]);showPage('exam');renderQuiz();$('#examCode'+id.split(':')[2]).scrollIntoView({behavior:'smooth',block:'center'})}});
+  }
+};
+function examVariant(bankIndex,round){
+  if(bankIndex<questions.length){const row=quizSimilar[bankIndex][round];return {q:`判断对错：${row[0]}`,o:['错误','正确'],a:Number(row[1]),e:questions[bankIndex].e}}
+  const original=examQuestionBank[bankIndex],same=extraQuestions.filter(q=>q.group===original.group&&q!==original);
+  return same[round%same.length];
+}
+function renderExamWrongReview(){
+  if(!examReview)return;
+  const [paper,,index]=examReview.id.split(':').map((part,i)=>i===1?part:Number(part));
+  const bankIndex=examPapers[paper].questionIds[index],original=examQuestionBank[bankIndex],variant=examReview.round>=0?examVariant(bankIndex,examReview.round):null,q=variant||original;
+  $('#wrongReview').innerHTML=`<div class="callout" style="margin-top:15px"><b>${examPapers[paper].name} · ${variant?`同知识点仿题 ${examReview.round+1} / 3`:'原题重做'}</b><p>${esc(q.q)}</p>${q.o.map((option,j)=>`<label class="option"><input type="radio" name="examReviewChoice" value="${j}"><span>${String.fromCharCode(65+j)}. ${esc(option)}</span></label>`).join('')}<button class="btn primary" id="submitExamReview">提交本题</button><div class="feedback" id="examReviewFeedback"></div></div>`;
+  $('#submitExamReview').onclick=()=>{const selected=$('input[name="examReviewChoice"]:checked');if(!selected){toast('先选择答案');return}const right=Number(selected.value)===q.a;if(!variant&&right){state.examWrongV2=state.examWrongV2.filter(id=>id!==examReview.id);examReview=null;save();$('#wrongReview').innerHTML='<div class="result correct">原题重做正确，已从错题本移除。</div>';return}const next=variant?(examReview.round<2?'下一道仿题':'返回原题'):'开始三道仿题';$('#examReviewFeedback').innerHTML=`<p class="${right?'correct':'wrong'}">${right?'回答正确':'回答错误'}。正确答案：${String.fromCharCode(65+q.a)}. ${esc(q.o[q.a])}</p><p>${esc(q.e)}</p><button class="btn" id="nextExamReview">${next}</button>`;$('#nextExamReview').onclick=()=>{examReview.round=variant?(examReview.round<2?examReview.round+1:-1):0;renderExamWrongReview()}};
+  $('#wrongReview').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+$('#clearWrong').addEventListener('click',()=>{state.examWrongV2=[];examReview=null;save()});
+
 renderLessonList();renderLesson();renderExercises();renderQuiz();renderProgress();
 </script>
 </body>
