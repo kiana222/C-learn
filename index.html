@@ -10,7 +10,14 @@
 @media(max-width:850px){.topin{gap:10px;padding:10px 14px;flex-wrap:wrap}.nav{order:3;flex-basis:100%;max-width:100%}.topmeta{margin-left:auto}.wrap{padding:0 14px 40px;margin-top:16px}.hero{padding:26px 21px}.grid.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.homegrid{grid-template-columns:1fr}.lessonlayout{grid-template-columns:1fr}.sidebar{position:relative;top:auto;max-height:265px}.roadmap{grid-template-columns:repeat(2,1fr)}.practicegrid{grid-template-columns:1fr}.compiler iframe{height:470px}}
 @media(max-width:480px){body{font-size:14px}.topmeta{font-size:11px}.nav button{padding:8px 10px;font-size:13px}.hero h1{font-size:29px}.grid.stats{gap:9px}.card{padding:14px}.stat b{font-size:22px}.sectionhead{align-items:start;flex-direction:column}.lessonbody h2{font-size:22px}.compiler iframe{height:430px}.table th,.table td{padding:9px 5px;font-size:12px}}
 .compiler-guide{margin:0 0 16px}.compiler-guide summary{cursor:pointer;font-size:18px;font-weight:800}.compiler-guide h3{font-size:16px;margin:20px 0 8px}.compiler-guide ol{padding-left:22px}.compiler-guide li{margin:7px 0}.compiler-guide code{background:#eef2f9;border-radius:5px;padding:1px 4px}.compiler-guide .codebox{margin:9px 0}.compiler-guide .codebox code{background:transparent;padding:0}
-.interview-answer{margin-top:12px;padding:10px 12px;background:#fff;border:1px solid #ead7ae;border-radius:9px}.interview-answer summary{list-style:none}.interview-answer summary::-webkit-details-marker{display:none}.interview-answer summary::after{content:" ↓"}.interview-answer[open] summary::after{content:" ↑"}.interview-answer p{margin:8px 0 0}.lesson-check{margin:12px 0 18px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fbfcff}.lesson-check p{margin:8px 0 10px}.lesson-check textarea{width:100%;min-height:150px;border:1px solid #dce3ee;border-radius:10px;padding:10px;resize:vertical;font:13px/1.55 ui-monospace,Consolas,monospace;background:#fff}.lesson-check .toolbar{margin-top:9px}.lesson-check .answer pre{white-space:pre-wrap;word-break:break-word}.lesson-check .feedback{min-height:18px}</style>
+.interview-answer{margin-top:12px;padding:10px 12px;background:#fff;border:1px solid #ead7ae;border-radius:9px}.interview-answer summary{list-style:none}.interview-answer summary::-webkit-details-marker{display:none}.interview-answer summary::after{content:" ↓"}.interview-answer[open] summary::after{content:" ↑"}.interview-answer p{margin:8px 0 0}.lesson-check{margin:12px 0 18px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fbfcff}.lesson-check p{margin:8px 0 10px}.lesson-check textarea{width:100%;min-height:150px;border:1px solid #dce3ee;border-radius:10px;padding:10px;resize:vertical;font:13px/1.55 ui-monospace,Consolas,monospace;background:#fff}.lesson-check .toolbar{margin-top:9px}.lesson-check .answer pre{white-space:pre-wrap;word-break:break-word}.lesson-check .feedback{min-height:18px}html,body{max-width:100%;overflow-x:clip}
+.top,.topin,.nav,.wrap,.page,.lessonlayout,.lessonlayout>*,.card,.lessonbody,.lesson-check,.question,.callout{min-width:0}
+.lessonbody,.lesson-check,.question,.callout{max-width:100%}
+.codebox{display:block;width:100%;max-width:100%;overflow-x:auto;overflow-y:auto}
+.lessonbody p,.lessonbody li,.question,.callout,.answer{overflow-wrap:anywhere}
+.lesson-check textarea{display:block;width:100%;max-width:100%}
+@media(max-width:850px){.topin{width:100%}.nav{flex:0 1 100%;width:100%;min-width:0}.lessonlayout{width:100%;grid-template-columns:minmax(0,1fr)}.sidebar,.lessonbody{width:100%;min-width:0}}
+</style>
 </head>
 <body>
 <header class="top"><div class="topin"><a class="brand" href="#home"><span class="logo">C</span><span>C 起步</span></a><nav class="nav" aria-label="主导航"><button data-page="home" class="active">首页</button><button data-page="lessons">语法教学</button><button data-page="practice">实操练习</button><button data-page="exam">模拟考试</button><button data-page="progress">学习进度</button></nav><span class="topmeta" id="topProgress">已完成 0 / 53 课</span></div></header>
@@ -655,9 +662,9 @@ const interviewAnswers=[
 ];
 const lessonChecks=[
 L("写一个输出 Hello, C! 的完整 C 程序。",String.raw`#include <stdio.h>
-int main(void){puts("Hello, C!");return 0;}`,[['','Hello, C!']], 'puts("Hello, C!");','puts("Hello, C!")',['puts']),
-L("读入整数、一个小数和一个字符，按原顺序输出，小数保留一位。",String.raw`#include <stdio.h>
-int main(void){int n;double v;char c;scanf("%d %lf %c",&n,&v,&c);printf("%d %.1f %c\n",n,v,c);return 0;}`,[['3 2.5 A','3 2.5 A'],['10 0.7 Z','10 0.7 Z']], 'printf("%d %.1f %c\\n",n,v,c)','printf("%d %.1f %c\\n",n,v-1.0,c)',['double','char']),
+int main(void){printf("Hello, C!\n");return 0;}`,[['','Hello, C!']], 'Hello, C!','Hello, C?',['printf']),
+L("声明 int n=3、double v=2.5 和 char c='A'，输出 3 2.5 A。",String.raw`#include <stdio.h>
+int main(void){int n=3;double v=2.5;char c='A';printf("%d %.1f %c\n",n,v,c);return 0;}`,[['','3 2.5 A']], 'printf("%d %.1f %c\\n",n,v,c)','printf("%d %.1f %c\\n",n,v-1.0,c)',['double','char']),
 L("读入两个整数，输出它们的和。",String.raw`#include <stdio.h>
 int main(void){int a,b;scanf("%d%d",&a,&b);printf("%d\n",a+b);return 0;}`,[['7 4','11'],['-3 9','6']], 'a+b','a-b',['scanf','&a','&b']),
 L("读入两个正整数，输出整数商和余数，中间一个空格。",String.raw`#include <stdio.h>
@@ -670,9 +677,8 @@ L("读入 n，依次输出小于 n 的奇数；遇到 7 就停止。数字后面
 int main(void){int n;scanf("%d",&n);for(int i=1;i<n;i++){if(i==7)break;if(i%2==0)continue;printf("%d ",i);}return 0;}`,[['9','1 3 5'],['6','1 3 5']], 'if(i%2==0)continue;','if(i%2==0)break;',['break','continue']),
 L("读入 5 个整数，使用数组求和并输出。",String.raw`#include <stdio.h>
 int main(void){int a[5],sum=0;for(int i=0;i<5;i++)scanf("%d",&a[i]);for(int i=0;i<5;i++)sum+=a[i];printf("%d\n",sum);return 0;}`,[['1 2 3 4 5','15'],['5 0 -1 0 6','10']], 'sum+=a[i]','sum+=a[0]',['[5]']),
-L("读入不超过 15 个字符的单词，输出可见字符数。",String.raw`#include <stdio.h>
-#include <string.h>
-int main(void){char s[16];scanf("%15s",s);printf("%zu\n",strlen(s));return 0;}`,[['cat','3'],['hello','5']], 'strlen(s)','sizeof(s)',['char','strlen']),
+L("声明 char s[9] 保存 C，输出可容纳的最多可见字符数。",String.raw`#include <stdio.h>
+int main(void){char s[9]="C";printf("%zu\n",sizeof s-1);return 0;}`,[['','8']], 'sizeof s-1','sizeof s',['char','sizeof']),
 L("读入两个单词，相同输出 equal，否则输出 diff。",String.raw`#include <stdio.h>
 #include <string.h>
 int main(void){char a[16],b[16];scanf("%15s%15s",a,b);puts(strcmp(a,b)==0?"equal":"diff");return 0;}`,[['cat cat','equal'],['cat dog','diff']], 'strcmp(a,b)==0','strcmp(a,b)!=0',['strcmp']),
@@ -803,12 +809,725 @@ L("模拟看门狗喂狗条件：读入采样、通信、控制三项健康标�
 int main(void){int sensor,uart,control;scanf("%d%d%d",&sensor,&uart,&control);puts(sensor&&uart&&control?"feed":"hold");return 0;}`,[['1 0 1','hold'],['1 1 1','feed']], 'sensor&&uart&&control','sensor||uart||control',['&&']),
 ];
 function L(prompt,answer,cases,from,to,focus){return{prompt,answer,cases,broken:answer.replace(from,to),focus}}
+// Teaching examples: every physical code line carries a purpose comment.
+const lessonDemoCodes = [
+String.raw`#include <stdio.h> // 引入标准输入输出声明，才能调用 printf。
+int main(void) { // main 是程序入口；void 表示这里不接收参数。
+    printf("Hello, world!\n"); // 在屏幕输出文字，\n 让光标换行。
+    return 0; // 向运行环境报告程序正常结束。
+} // main 函数到此结束。`,
+String.raw`#include <stdio.h> // 声明 printf，供后面输出变量。
+int main(void) { // 程序从这里开始执行。
+    int mv = 3300; // int 存整数毫伏，赋值号 = 把 3300 放进去。
+    double volts = 3.3; // double 存带小数的电压，初始化为 3.3。
+    char state = 'R'; // char 存一个字符，单引号表示字符常量。
+    printf("%d %.1f %c\n", mv, volts, state); // %d 对应 int，%.1f 对应保留一位的小数，%c 对应 char。
+    mv = 5000; // 再次赋值会更新变量当前保存的数。
+    printf("%d\n", mv); // 用 %d 输出更新后的整数值。
+    return 0; // 正常结束程序。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf 和 scanf。
+int main(void) { // 从 main 开始执行。
+    int raw = 0; // 准备一个整数变量接收输入。
+    printf("请输入采样值："); // 用 printf 显示输入提示。
+    int count = scanf("%d", &raw); // %d 读整数；&raw 提供地址；返回值记录成功读到几项。
+    printf("成功读取=%d，采样值=%d\n", count, raw); // 有效整数时 count=1；否则本例的 raw 保持初始值 0。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf 和 puts。
+int main(void) { // 进入主函数。
+    int a = 7, b = 3; // 准备两个整数，b 非零才可做除法和取余。
+    printf("%d %d\n", a / b, a % b); // 整数除法得 2，取余得 1；小数部分不会保留。
+    printf("%d\n", (a + b) * 2); // 括号使加法先算，再乘 2。
+    printf("%d\n", a == b); // == 比较是否相等，结果为 0 或 1；= 是赋值。
+    int in_range = (a >= 0) && (a <= 4095); // && 要两侧都真；左侧假时右侧不再求值。
+    printf("%d %d %d\n", in_range, (a < 0) || (a > 4095), !in_range); // || 表示或，! 把真假取反。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 puts。
+int main(void) { // 程序入口。
+    int score = 86; // 用固定分数展示条件分支。
+    if (score >= 60) { // if 的条件放圆括号里；这里比较是否及格。
+        puts("及格"); // 条件为真时运行这一块。
+    } else { // 花括号划分代码块；else 接住其余情况。
+        puts("继续加油"); // 条件为假时运行这一块。
+    } // if / else 结构结束。
+    puts(score >= 60 ? "pass" : "fail"); // 条件运算符 ?: 在条件真/假时各选一个字符串。
+    switch (score / 10) { // 按分数的十位选择一个 case。
+        case 10: case 9: puts("优秀"); break; // 两个 case 共用动作；break 阻止继续落入下一个分支。
+        case 8: puts("良好"); break; // 分数在八十段时输出，再退出 switch。
+        default: puts("其他"); // 未匹配任何 case 时执行 default。
+    } // switch 结束。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+int main(void) { // 程序入口。
+    int sum = 0; // 累加器从 0 开始。
+    for (int i = 1; i <= 3; ++i) { // 初始化 i=1；i<=3 时继续；每轮 i 加 1，终会停止。
+        sum += i; // 每一轮把当前 i 加入总和。
+    } // for 循环结束。
+    int n = 2; // 给 while 一个会改变的计数器。
+    while (n > 0) { // 先检查条件，条件为假时一次也不执行。
+        --n; // 每轮减 1，防止无限循环。
+    } // while 循环结束。
+    do { // do-while 先执行循环体，至少执行一次。
+        ++n; // 即使末尾条件为假，这一行也已执行。
+    } while (n < 1); // 在末尾检查条件；此处的分号不能漏。
+    printf("%d %d\n", sum, n); // 输出 for 的和与 do-while 的结果。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+int main(void) { // 程序入口。
+    for (int i = 1; i <= 6; ++i) { // 依次处理 1 到 6。
+        if (i == 2) continue; // 跳过本轮剩余语句，继续下一轮。
+        if (i == 5) break; // 到 5 时结束最近这一层循环。
+        printf("%d ", i); // 只输出未跳过且未触发 break 的数。
+    } // for 循环结束。
+    goto finish; // goto 跳到标签；只在清理等少数场景谨慎使用。
+    puts("不会执行"); // 因为前一行跳转，这行不会运行。
+finish: // 标签是 goto 的目标位置。
+    return 0; // 程序从标签处正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+int main(void) { // 程序入口。
+    int a[3] = {2, 4, 6}; // 一维数组有 3 个同类型且连续存放的 int，合法下标 0..2。
+    int table[2][3] = {{1, 2, 3}, {4, 5, 6}}; // 二维数组按行初始化，每行 3 列。
+    printf("%d %d\n", a[0], table[1][2]); // a[0] 是首项；table[1][2] 是第二行第三列。
+    printf("%zu\n", sizeof a / sizeof a[0]); // 用总字节数除单项字节数求本地数组长度。
+    return 0; // 正常结束；访问 a[3] 会越界，所以不演示执行。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+int main(void) { // 程序入口。
+    char word[9] = "C"; // 最多装 8 个可见字符，另留 1 字节给结束符。
+    printf("%s\n", word); // %s 从数组开头打印，遇到 '\0' 才停止。
+    printf("%d %zu\n", word[1] == '\0', sizeof word); // word[1] 是结束符；sizeof 得到整个数组的 9 字节容量。
+    word[1] = '8'; // 在原结束符位置写入一个可见字符。
+    word[2] = '\0'; // 把新结尾明确设为结束符，否则 %s 会继续读下去。
+    printf("%s\n", word); // 现在输出 C8；本课还不用下一课的 strlen。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf 和 puts。
+#include <string.h> // 声明 strlen、strcmp、strcpy。
+int main(void) { // 程序入口。
+    char src[] = "C language"; // 源字符串末尾自动带 '\0'；本课只用已学的字符数组。
+    char dst[16]; // 目标数组有 16 字节，足够容纳 src 及结束符。
+    if (strlen(src) + 1 <= sizeof dst) { // strlen 只数可见字符，所以还要给 '\0' 加 1。
+        strcpy(dst, src); // strcpy 会连结束符一起复制；它不会帮你检查容量。
+    } // 容量检查结束。
+    printf("%zu %d\n", strlen(dst), strcmp(dst, src)); // strlen 返回可见长度；strcmp 相等时返回 0。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+int add(int a, int b); // 函数声明给出返回类型、名称和形参类型，末尾要有分号。
+int main(void) { // 程序从 main 开始。
+    printf("%d\n", add(2, 3)); // 调用在后面定义的 add；声明让编译器先知道签名。
+    return 0; // 正常结束。
+} // main 函数结束。
+int add(int a, int b) { // 函数定义有函数头与花括号包围的函数体。
+    return a + b; // 把两参数之和作为 int 返回。
+} // add 定义结束；函数体后面不再加分号。`,
+String.raw`#include <stdio.h> // 声明 printf。
+void show_result(int value) { // void 表示本函数不返回值，参数是普通 int 值。
+    printf("result=%d\n", value); // 只负责输出传进来的计算结果。
+} // show_result 函数结束。
+int square(int n) { // n 是按值传入的 int 形参。
+    n = n * n; // 只改函数内的 n，不会直接改调用者的变量。
+    return n; // 返回计算结果，类型与 int 返回类型一致。
+} // square 函数结束。
+int main(void) { // 程序入口。
+    int x = 4; // 准备原变量。
+    int y = square(x); // 把 x 的值传进去，取得返回值。
+    show_result(y); // 调用没有返回值的函数，把 16 交给它输出。
+    printf("x=%d\n", x); // x 仍是 4，证明修改形参不会直接改原变量。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+int sum_to(int n) { // 定义递归函数，参数是当前问题的规模。
+    if (n <= 0) return 0; // 基本情况：到 0 就停止递归。
+    return n + sum_to(n - 1); // 把规模减 1，逐步走向基本情况。
+} // 当前调用返回后，对应的栈帧会释放。
+int main(void) { // 程序入口。
+    printf("%d\n", sum_to(5)); // 计算 5+4+3+2+1；输入过大会让递归栈过深。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+int global_count = 0; // 全局变量具有静态存储期，多个函数可访问。
+void tick(void) { // 每次调用都进入此函数。
+    int temporary = 1; // 普通局部变量只在此块内可见，离开块后生命周期结束。
+    static int calls = 0; // 静态局部变量作用域仍在函数内，但值跨调用保留。
+    ++global_count; // 修改全局变量；共享状态过多会让程序难维护。
+    ++calls; // 在上次调用留下的值上继续加 1。
+    printf("%d %d %d\n", temporary, calls, global_count); // 两次调用的 temporary 都是 1，另外两个计数持续增加。
+} // tick 函数结束，temporary 不能在函数外访问。
+int main(void) { // 程序入口。
+    tick(); // 第一次调用，计数为 1。
+    tick(); // 第二次调用，计数为 2。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+int main(void) { // 程序入口。
+    int value = 42; // 创建一个 int 对象。
+    int *ptr = &value; // ptr 是指向 int 的指针；&value 取得 value 的地址。
+    printf("%d\n", *ptr); // *ptr 解引用，读取 ptr 所指的 int。
+    *ptr = 50; // 经有效指针修改原对象。
+    int *missing = NULL; // NULL 明确表示当前不指向可用对象。
+    if (missing != NULL) printf("%d\n", *missing); // 先检查再解引用；此处条件假，避免非法访问。
+    printf("%d\n", value); // 原变量已被改成 50；未初始化指针也绝不能直接解引用。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+void show(const int *a, int length) { // 数组形参在此退化为指针，所以长度另传。
+    for (int i = 0; i < length; ++i) { // 只访问给定范围内的元素。
+        printf("%d ", *(a + i)); // *(a+i) 与 a[i] 等价；加 1 跨过一个 int，而非一个字节。
+    } // 遍历结束。
+} // show 函数结束。
+int main(void) { // 程序入口。
+    int a[] = {10, 20, 30}; // 三个 int 连续存放。
+    int *p = a; // 在此表达式里数组名转为首元素地址。
+    printf("%d\n", p[1]); // 指针也可用下标语法，得到第二项 20。
+    show(a, 3); // 传首元素地址，同时明确传长度 3。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+void swap(int *a, int *b) { // 传入两个 int 的地址，函数才能修改原对象。
+    int temp = *a; // 暂存第一个对象的值。
+    *a = *b; // 把第二个对象的值写到第一个。
+    *b = temp; // 把暂存值写到第二个，完成交换。
+} // swap 结束；不能把普通局部变量 temp 的地址返回给调用者。
+int main(void) { // 程序入口。
+    int x = 2, y = 9; // 准备两个待交换的变量。
+    swap(&x, &y); // &x、&y 把变量地址交给指针形参。
+    printf("%d %d\n", x, y); // 输出 9 2，证明原变量已改变。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+void point_to(int **out, int *target) { // out 指向调用者的 int * 变量。
+    *out = target; // 解一层得到原指针，再把目标地址赋给它。
+} // point_to 函数结束。
+int main(void) { // 程序入口。
+    int n = 7; // 创建实际要指向的 int 对象。
+    int *p = NULL; // p 起初不指向任何对象。
+    point_to(&p, &n); // &p 的类型是 int **，&n 的类型是 int *。
+    printf("%d\n", *p); // p 已指向 n，解引用一层读到 7。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+struct Sample { char channel; int raw; }; // 定义结构体类型；成员可能因对齐而有填充。
+int main(void) { // 程序入口。
+    struct Sample s = {'A', 2048}; // 按成员声明顺序初始化 channel 与 raw。
+    printf("%c %d\n", s.channel, s.raw); // 普通结构体对象用点号访问成员。
+    printf("%zu %zu\n", sizeof s, sizeof s.channel + sizeof s.raw); // 对比实际结构体大小与成员大小之和，观察可能的填充。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+struct Point { int x, y; }; // 定义由两个 int 组成的结构体类型。
+void move_x(struct Point *p) { // 传结构体地址，避免复制整个结构体。
+    if (p == NULL) return; // 使用指针前先确认它指向有效对象。
+    p->x = p->x + 1; // p->x 等价于 (*p).x，修改调用者对象的 x。
+} // move_x 函数结束。
+int main(void) { // 程序入口。
+    struct Point point = {3, 4}; // 创建一个实际存在的结构体对象。
+    move_x(&point); // 传入该对象的地址。
+    printf("%d %d\n", point.x, point.y); // 输出修改后的成员值。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 puts 和 printf。
+enum State { IDLE, RUNNING = 3, ERROR }; // IDLE 默认 0；RUNNING 显式 3；ERROR 接着变 4。
+int main(void) { // 程序入口。
+    enum State state = RUNNING; // 变量类型是 enum State，用状态名比裸数字清楚。
+    if (state == RUNNING) puts("正在运行"); // 枚举值参与比较时会按整数规则处理。
+    printf("%d %d %d\n", IDLE, RUNNING, ERROR); // 查看默认值、显式值和后续递增值。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+union Value { int number; float fraction; }; // 联合体成员共享同一块存储，不会各占一份。
+struct Message { int tag; union Value data; }; // tag 标记当前有效的联合体成员。
+int main(void) { // 程序入口。
+    struct Message m = {0, {.number = 12}}; // 标记 0，写入 number 成员。
+    if (m.tag == 0) printf("%d\n", m.data.number); // 按标签读取最近写入的成员。
+    printf("%zu\n", sizeof m.data); // union 至少容纳最大成员，也可能为对齐而增加字节。
+    m.tag = 1; // 切换有效成员的标签。
+    m.data.fraction = 1.5f; // 现在写入 fraction；不再把旧 number 当作有效值读取。
+    printf("%.1f\n", m.data.fraction); // 读取与最近写入相同的成员，避免依赖不可移植类型重解释。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+typedef unsigned long Count; // typedef 原类型 别名；Count 是更好读的名称。
+typedef struct { int x; int y; } Point; // 给匿名结构体起别名，声明时无需再写 struct。
+int main(void) { // 程序入口。
+    Count n = 3; // Count 仍是 unsigned long 类型。
+    Point p = {1, 2}; // 按声明顺序初始化结构体成员。
+    printf("%lu %d\n", n, p.x); // 用底层类型对应的格式输出。
+    printf("%d\n", sizeof(Count) == sizeof(unsigned long)); // 别名不改变底层类型大小。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+int main(void) { // 程序入口。
+    unsigned flags = 0u; // 位操作优先使用无符号整数，避免符号扩展困扰。
+    unsigned mask = 1u << 2; // 左移构造第 2 位掩码；位号必须小于 unsigned 的位数。
+    flags |= mask; // 用按位或把目标位置 1。
+    printf("%d\n", (flags & mask) != 0u); // 用按位与测试目标位是否为 1。
+    flags &= ~mask; // 对掩码取反后按位与，把目标位清 0。
+    printf("%u\n", flags); // 打印清位后的结果；不对负数做位移。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+#define SQUARE(x) ((x) * (x)) // 宏名通常大写；实参和整体都加括号，避免优先级错误。
+int square_once(int x) { // 函数形参只会求值一次，更适合复杂表达式。
+    return x * x; // 返回平方结果。
+} // 函数定义结束。
+int main(void) { // 程序入口。
+    printf("%d\n", SQUARE(3 + 1)); // 展开成 ((3+1)*(3+1))，得到 16。
+    int n = 3; // 准备变量说明宏的重复求值风险。
+    printf("%d\n", square_once(n++)); // 函数调用只对 n++ 求值一次；不要把 n++ 传给 SQUARE。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 puts。
+#ifndef SAMPLE_H // 若还未定义 SAMPLE_H 才处理下面的声明，常用于头文件防重。
+#define SAMPLE_H // 定义保护宏，重复包含时上面的判断会为假。
+typedef struct { int value; } Sample; // 这段类型声明只应生效一次。
+#endif // 结束 #ifndef 条件块。
+#define DEBUG 0 // DEBUG 定义为 0；#ifdef 仍认为它“已定义”。
+int main(void) { // 程序入口。
+#ifdef DEBUG // 只检查是否定义，因此 DEBUG 虽然为 0，此块仍会保留。
+    puts("macro exists"); // 演示 #ifdef 与 #if DEBUG 的判断对象不同。
+#endif // 结束 #ifdef 条件块。
+#if DEBUG // 在预处理阶段判断宏的数值，不是运行时 if。
+    puts("debug"); // DEBUG 为 1 时编译进程序。
+#else // DEBUG 为 0 时选择下面的分支。
+    puts("release"); // 当前只有这条输出会编译进程序。
+#endif // 结束 #if DEBUG 条件块。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+int shared_count = 0; // 文件作用域变量在此定义一次；其他文件可用 extern 声明引用。
+extern int shared_count; // extern 只声明同一个外部对象，不再创建第二份定义。
+static int file_only = 1; // 文件作用域 static 把名字限制在当前源文件。
+volatile int mock_register = 0; // volatile 表示每次访问都要按规则处理；它不保证原子操作。
+void tick(void) { // 定义计数函数。
+    static int calls = 0; // 局部 static 的值跨调用保留到程序结束。
+    ++calls; // 每次调用累加同一个持久对象。
+    mock_register = calls; // 模拟写入可能被外部改变的对象。
+} // tick 函数结束。
+int main(void) { // 程序入口。
+    const int limit = 10; // const 使 limit 不能通过此名字再赋值。
+    tick(); // 第一次调用计数函数。
+    printf("%d %d %d\n", shared_count, file_only, limit); // 分别读取全局、文件内与常量对象。
+    return 0; // 正常结束；其他 .c 可写 extern int shared_count;，但不能访问 file_only。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+#include <stdlib.h> // 声明 malloc 和 free。
+int global_value = 3; // 全局对象具有静态存储期。
+int main(void) { // 程序入口。
+    static int saved = 2; // 静态局部对象也具有静态存储期，但作用域在函数内。
+    int local[1] = {4}; // 普通局部数组有自动存储期，离开块后不再有效。
+    int *dynamic = malloc(sizeof *dynamic); // malloc 获取动态存储期对象；“堆”是常见实现说法。
+    if (dynamic == NULL) return 1; // 申请失败时不能解引用。
+    *dynamic = 5; // 初始化动态对象。
+    printf("%d %d %d %d\n", global_value, saved, local[0], *dynamic); // 比较四种对象的值。
+    free(dynamic); // 显式结束动态对象的生命周期；C 标准不强制具体栈/堆位置。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+#include <stdlib.h> // 声明 malloc 和 free。
+int main(void) { // 程序入口。
+    int n = 3; // 准备要申请的元素个数。
+    int *a = malloc((size_t)n * sizeof *a); // 按元素个数和所指类型大小申请，malloc 返回 void *。
+    if (a == NULL) return 1; // malloc 失败返回 NULL，必须先检查。
+    for (int i = 0; i < n; ++i) a[i] = i * 10; // 初始化成功申请的每个元素。
+    printf("%d\n", a[2]); // 在有效范围内读取第三项。
+    free(a); // 每块动态内存应释放一次。
+    a = NULL; // free 后原指针不再有效，把当前变量置空防止误用。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 puts。
+#include <stdlib.h> // 声明 malloc 和 free。
+int main(void) { // 程序入口。
+    int *p = malloc(sizeof *p); // 申请一个 int；长期不释放会形成泄漏。
+    if (p == NULL) return 1; // 申请失败时直接返回，没有已申请对象要释放。
+    *p = 8; // 只在成功申请后写入对象。
+    if (*p < 0) { // 演示有早退的分支。
+        free(p); // 早退前也必须释放，避免泄漏。
+        return 1; // 此处返回后不能再使用 p。
+    } // 早退分支结束。
+    free(p); // 正常路径释放一次；重复 free 会出错。
+    p = NULL; // 置空此变量，避免它继续指向已释放对象。
+    puts("done"); // 不再解引用或越界访问已释放对象。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 FILE、fopen、fprintf、fclose。
+int main(void) { // 程序入口；本示例在当前目录创建/覆盖 note.txt。
+    FILE *fp = fopen("note.txt", "w"); // w 创建或覆盖；若要追加到末尾应改用 a。
+    if (fp == NULL) return 1; // 打开失败返回 NULL，不能继续写。
+    if (fprintf(fp, "score=%d\n", 95) < 0) { // 写入文本并检查返回值是否报告错误。
+        fclose(fp); // 即使写入失败，也关闭已打开的文件流。
+        return 1; // 报告写入失败。
+    } // 写入检查结束。
+    if (fclose(fp) != 0) return 1; // 用完及时关闭，并检查关闭时可能出现的写出错误。
+    fp = fopen("note.txt", "a"); // a 以追加模式重新打开，不覆盖原有文本。
+    if (fp == NULL) return 1; // 再次检查打开结果。
+    if (fprintf(fp, "next=%d\n", 96) < 0) { fclose(fp); return 1; } // 追加新行，失败时先关闭。
+    if (fclose(fp) != 0) return 1; // 追加完成后也要关闭并检查结果。
+    return 0; // 正常结束；读取时应重新以 r 打开并检查读到的项目数。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 头文件由预处理阶段展开，提供 puts 的声明。
+#define MESSAGE "compiled" // 宏也在预处理阶段展开为对应文本。
+int main(void) { // 编译阶段把 C 语句翻译成汇编表示。
+    puts(MESSAGE); // 汇编阶段把汇编变成目标文件中的机器代码和符号引用。
+    return 0; // 链接阶段把目标文件与所需库组合，解决 puts 的外部引用。
+} // main 函数结束；可用 gcc -E/-S/-c 逐步查看阶段，最后 gcc main.o -o app。`,
+String.raw`#include <stdio.h> // <...> 通常搜索系统头文件路径；项目头文件通常用 "..."。
+#ifndef SENSOR_H // 这是 sensor.h 中常见的保护宏起点，防止重复声明。
+#define SENSOR_H // 首次包含时定义保护宏。
+int sensor_read(void); // 放在 sensor.h 的公开声明，供其他 .c 调用。
+extern int shared_value; // 如需跨文件共享全局对象，头文件只放 extern 声明。
+#endif // 结束 sensor.h 的保护范围。
+int shared_value = 1; // 实际放 sensor.c：全程序仅此一处定义该全局对象。
+static int private_value = 7; // 实际放 sensor.c：static 变量只在该源文件可见。
+int sensor_read(void) { // 实际放 sensor.c：函数定义在整个程序中只保留一份。
+    return private_value; // 把私有状态转成公开函数返回值。
+} // sensor_read 定义结束。
+int main(void) { // 实际放 main.c，并 #include "sensor.h"。
+    printf("%d\n", sensor_read()); // main.c 通过头文件声明调用 sensor.c 的实现。
+    return 0; // 正常结束；共享全局对象也只能定义一次，其余文件用 extern 声明。
+} // 这个单文件版本便于复制运行；拆成三文件时按上述注释分开放置。`,
+String.raw`#include <stdio.h> // 声明 printf。
+#include <string.h> // 声明 strcpy、memcpy、memmove。
+struct Example { char c; int n; }; // 成员之间可能有对齐填充，sizeof 包含填充。
+int main(void) { // 程序入口。
+    char src[] = "C"; // 字符串含 C 和结束符 '\0' 两个字节。
+    char dst[8]; // 目标空间足够容纳 src。
+    strcpy(dst, src); // 复制字符串及结束符；必须先确认目标容量。
+    char copy[8]; // 准备原始字节复制目标。
+    memcpy(copy, src, sizeof src); // 按字节数复制；源与目标若重叠应改用 memmove。
+    char overlap[8] = "abcd"; // 准备一块源与目标可能重叠的字符数组。
+    memmove(overlap + 1, overlap, 4); // 重叠时用 memmove，把 abcd 右移一格。
+    unsigned value = 0x1234u; // 用数值而不是强制读内存演示字节顺序。
+    const unsigned char *memory = (const unsigned char *)&value; // 按字节观察内存；unsigned char 允许检查对象表示。
+    unsigned hi = (value >> 8) & 0xFFu; // 显式取得高字节，与主机大小端无关。
+    unsigned lo = value & 0xFFu; // 显式取得低字节；内存中先放谁才叫大小端。
+    printf("%s %s %02X %02X %zu\n", dst, copy, hi, lo, sizeof(struct Example)); // 输出复制结果、两字节和结构体大小。
+    printf("first-memory-byte=%02X\n", (unsigned)memory[0]); // 若目标机字节宽度为 8，可用首字节观察本机内存顺序。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+struct Node { int value; struct Node *next; }; // 节点保存值与下一个节点地址。
+int main(void) { // 程序入口。
+    struct Node second = {3, NULL}; // 尾节点的 next 是 NULL，表示链表结束。
+    struct Node first = {1, &second}; // 头节点指向 second；头指针可为 NULL 表示空链。
+    struct Node inserted = {2, NULL}; // 准备插入的新节点。
+    inserted.next = first.next; // 插入先接住旧后继，避免丢失后续链。
+    first.next = &inserted; // 再把前驱连接到新节点；头部插入通常 O(1)。
+    for (struct Node *p = &first; p != NULL; p = p->next) { // 按位置查找需逐节点前进，时间 O(n)。
+        printf("%d ", p->value); // 输出当前节点值。
+    } // 遍历结束；若节点来自 malloc，删除时还需正确 free。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+int main(void) { // 程序入口。
+    int stack[4], top = 0; // 栈用 top 记录下一次压入位置，初始为空。
+    if (top < 4) stack[top++] = 10; // 入栈前检查未满，栈采用后进先出。
+    if (top < 4) stack[top++] = 20; // 再压入 20，它会先弹出。
+    if (top > 0) printf("%d\n", stack[--top]); // 非空才出栈，输出 20。
+    int q[4], head = 0, tail = 0; // 环形队列用两个下标，预留一格区分满与空。
+    int next = (tail + 1) % 4; // 下标绕回开头，避免线性增长浪费空间。
+    if (next != head) { q[tail] = 7; tail = next; } // 未满才入队，写到尾部。
+    if (head != tail) { printf("%d\n", q[head]); head = (head + 1) % 4; } // 非空才出队，先进先出。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+int linear_search(const int a[], int n, int x) { // 线性查找不要求有序，最坏检查 n 项，为 O(n)。
+    for (int i = 0; i < n; ++i) if (a[i] == x) return i; // 从头顺序检查，找到即返回下标。
+    return -1; // 全部检查后仍未命中。
+} // linear_search 函数结束。
+int binary_search(const int a[], int n, int x) { // 二分要求数组已排序，时间 O(log n)。
+    int lo = 0, hi = n - 1; // 搜索区间初始为所有合法下标。
+    while (lo <= hi) { // 区间仍非空时继续。
+        int mid = lo + (hi - lo) / 2; // 计算中点，避免 lo+hi 直接相加溢出。
+        if (a[mid] == x) return mid; // 命中时返回下标。
+        if (a[mid] < x) lo = mid + 1; else hi = mid - 1; // 缩小有序区间，边界必须排除 mid。
+    } // 二分循环结束。
+    return -1; // 没找到时返回 -1。
+} // binary_search 函数结束。
+int main(void) { // 程序入口。
+    int a[] = {5, 2, 8, 1}; // 准备待排序数组。
+    for (int i = 0; i < 4; ++i) { // 冒泡做多轮比较，平均与最坏时间 O(n²)。
+        for (int j = 0; j < 3 - i; ++j) { // 已排到末尾的元素不必重复比较。
+            if (a[j] > a[j + 1]) { int t = a[j]; a[j] = a[j + 1]; a[j + 1] = t; } // 逆序时交换相邻项。
+        } // 一轮冒泡完成。
+    } // 全部排序完成。
+    printf("%d %d\n", linear_search(a, 4, 8), binary_search(a, 4, 8)); // 对已排序数组分别查找 8。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // PC 上用标准输出模拟板级初始化记录。
+static void board_init(void) { // 开发板初始化层；实际 STM32 会配置时钟、引脚和外设。
+    puts("clock, gpio, uart"); // 模拟 CubeMX 生成的初始化调用顺序。
+} // board_init 结束；真实函数名和参数以当前工程为准。
+static void app_step(void) { // 应用层只处理自己的业务逻辑。
+    puts("read event and update state"); // 在 PC 上模拟一次事件处理。
+} // app_step 结束；HAL、LL、CMSIS 是不同抽象层级。
+int main(void) { // PC 版程序入口；STM32 也从启动文件设置后进入 main。
+    board_init(); // 先完成板级配置，不能盲目复制别人的引脚设置。
+    app_step(); // 再执行应用任务。
+    return 0; // PC 程序结束；真实嵌入式主循环通常持续运行。
+} // 选板时先确认完整 STM32 型号，再核对手册和工程文件。`,
+String.raw`#include <stdio.h> // 声明 printf。
+#include <stdint.h> // 提供 uint8_t、uint32_t 等固定宽度整数类型。
+#include <inttypes.h> // 提供 PRIu32 这类跨平台输出格式宏。
+int main(void) { // 程序入口。
+    uint8_t sample = 250; // 8 位无符号数的范围是 0..255。
+    uint8_t next = (uint8_t)(sample + 10u); // 表达式先可能提升为 int，再转回 uint8_t，按模 256 得到 4。
+    uint32_t ticks = 100000u; // 固定 32 位计数，适合明确要求的接口。
+    printf("next=%u ticks=%" PRIu32 "\n", (unsigned)next, ticks); // 对 uint8_t 提升后用 %u，对 uint32_t 用 PRIu32。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+#include <stdint.h> // 声明 uint32_t、uint64_t。
+int main(void) { // 程序入口。
+    uint32_t raw = 4095u, vref_mv = 3300u; // 模拟 ADC 原始值和参考电压。
+    uint64_t product = (uint64_t)raw * vref_mv; // 先转宽再乘，避免先在窄类型中溢出。
+    uint32_t mv = (uint32_t)(product / 4095u); // 整数除法截掉小数部分。
+    int signed_error = -1; // 负数与无符号数混算容易产生意外结果。
+    if (signed_error < 0) puts("sensor error"); // 先在有符号域检查错误码，再参与无符号计算。
+    printf("%u\n", (unsigned)mv); // 输出计算得到的整数毫伏。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+#include <stdint.h> // 声明 uint32_t。
+int main(void) { // 程序入口，此处只模拟寄存器，不访问真实硬件地址。
+    volatile uint32_t output_reg = 0u; // volatile 要求按实现规则访问对象，不能当线程同步。
+    const uint32_t led_bit = 1u << 5; // 用无符号移位构造第 5 位掩码。
+    output_reg |= led_bit; // 对普通读写位做读改写，把目标位置 1。
+    printf("%u\n", (unsigned)output_reg); // 打印模拟寄存器当前值。
+    output_reg &= ~led_bit; // 清普通读写位；写 1 清零位不能这样照搬。
+    return 0; // 真正地址、位定义和读写属性必须查对应 STM32 参考手册。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 puts。
+int main(void) { // PC 上模拟 GPIO 输入与 LED 输出。
+    int button_pin = 0; // 假设按键接上拉，按下时读到低电平 0。
+    int button_pressed = (button_pin == 0); // 根据有效电平解释输入，不能只看数字大小。
+    int led_on = button_pressed; // 把按键事件映射为 LED 指令。
+    if (led_on) puts("LED on"); // 模拟 LED 点亮；真实板要确认输出引脚模式和供电。
+    else puts("LED off"); // 模拟 LED 熄灭；真实接线可能是低电平点亮。
+    return 0; // CubeMX 生成初始化后，把自己的逻辑放在可保留区域或独立源文件。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 puts。
+int main(void) { // PC 上模拟按键离散采样。
+    int samples[] = {0, 1, 0, 1, 1, 1, 1, 0}; // 0 松开、1 按下；采样周期决定实际去抖时间。
+    int stable = 0, candidate = 0, count = 0; // 分别保存稳定状态、候选状态及连续次数。
+    for (unsigned i = 0; i < sizeof samples / sizeof samples[0]; ++i) { // 按顺序处理所有采样值。
+        if (samples[i] != candidate) { candidate = samples[i]; count = 1; } // 值变化时重置候选与次数。
+        else if (count < 3) ++count; // 值持续相同时增加连续次数，最多记到 3。
+        if (count == 3 && stable != candidate) { // 候选状态稳定 3 次且不同于旧稳定状态才确认。
+            stable = candidate; // 更新已确认的稳定状态。
+            if (stable) puts("press event"); // 只在松开变为按下的边沿产生一次事件。
+        } // 状态确认结束。
+    } // 所有采样处理结束。
+    return 0; // 正常结束。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 puts。
+#include <stdint.h> // 声明 uint32_t。
+int main(void) { // 程序入口，模拟毫秒计数器回绕。
+    uint32_t last = UINT32_MAX - 15u; // 上次任务时间接近 32 位计数器最大值。
+    uint32_t now = 32u; // 当前计数已从最大值回绕到较小数。
+    uint32_t period = 40u; // 任务周期要设置在可安全比较的范围内。
+    if ((uint32_t)(now - last) >= period) puts("due"); // 无符号减法按模运算，可跨回绕判断经过时间。
+    else puts("wait"); // 还没到期时主循环可继续处理别的任务，不要阻塞等待。
+    return 0; // 实际 SysTick 频率及定时器时基须核对工程配置。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 puts。
+#include <stdint.h> // 声明 uint32_t。
+volatile uint32_t pending_event = 0u; // 模拟中断与主循环共享的标志，volatile 不保证原子性。
+void mock_irq_handler(void) { // PC 模拟中断入口；真实入口由启动文件向量表连接。
+    pending_event = 1u; // 中断只记录事件，尽量少做工作。
+} // 模拟中断函数结束。
+int main(void) { // 主循环的简化演示。
+    mock_irq_handler(); // 在 PC 上触发一次模拟事件。
+    if (pending_event != 0u) { // 检查是否有待处理事件。
+        pending_event = 0u; // 这里只演示逻辑；真实共享读改写应按芯片/编译器文档做临界区。
+        puts("handle event"); // 在主程序上下文完成主要处理。
+    } // 事件处理结束。
+    return 0; // ++ 这类复合操作不是因为 volatile 就自动原子。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+#define CAPACITY 4u // 数组有 4 格；预留一格后最多存 3 个值。
+int main(void) { // PC 模拟 UART 接收环形缓冲区。
+    unsigned char q[CAPACITY]; // UART 是字节流，消息边界还需协议定义。
+    unsigned head = 0u, tail = 0u; // head 指下一次写入，tail 指下一次读取。
+    unsigned next = (head + 1u) % CAPACITY; // 计算写入后的新位置，必要时绕回 0。
+    if (next != tail) { q[head] = 0x41u; head = next; } // 未满才写入字节 A，满则按策略拒绝。
+    if (head != tail) { printf("%c\n", q[tail]); tail = (tail + 1u) % CAPACITY; } // 非空才取出最早字节。
+    return 0; // 中断与主循环并发时还需确认下标访问的原子性与同步规则。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+#include <stdint.h> // 声明 uint32_t。
+int main(void) { // PC 上模拟 12 位 ADC 采样。
+    uint32_t samples[4] = {1000u, 1010u, 990u, 1000u}; // 假设满量程 4095；实际还需确认 ADC 配置。
+    uint32_t sum = 0u; // 用足够宽的类型累加，减少溢出风险。
+    for (unsigned i = 0; i < 4u; ++i) sum += samples[i]; // 求四个原始采样值之和。
+    uint32_t average = sum / 4u; // 整数平均会舍去小数部分。
+    uint32_t mv = (uint32_t)((uint64_t)average * 3300u / 4095u); // 假设参考电压 3300 mV，先用 64 位乘法。
+    printf("avg=%u mv=%u\n", (unsigned)average, (unsigned)mv); // 输出平均原始值及近似毫伏。
+    return 0; // 真正精度还受参考电压、采样时间和外部电路影响。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+#include <stdint.h> // 声明 uint64_t。
+int main(void) { // PC 上只计算 PWM 比较值，不直接驱动负载。
+    unsigned percent = 120u; // 假设用户给出的占空比百分数可能超范围。
+    unsigned arr = 99u; // 模拟自动重装值；计数周期通常对应 arr+1 个计数。
+    if (percent > 100u) percent = 100u; // 把输入限制在 0..100%。
+    uint64_t cmp = (uint64_t)percent * ((uint64_t)arr + 1u) / 100u; // 先扩大乘数和周期，再换算比较值。
+    printf("%llu\n", (unsigned long long)cmp); // 输出整数比较值。
+    return 0; // 真实 PWM 模式、极性和边界以具体定时器配置为准，功率负载需驱动电路。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+int main(void) { // PC 上模拟收到两个协议字节。
+    unsigned high = 0x12u; // 假设数据手册规定高字节先传。
+    unsigned low = 0x34u; // 读取前要检查实际收到的长度和错误码。
+    unsigned received_length = 2u; // 模拟协议接口报告收到两个字节。
+    int transfer_ok = 1; // 模拟底层 SPI/I2C 调用返回成功。
+    if (!transfer_ok || received_length != 2u) return 1; // 传输失败或长度不足时先停止解析。
+    unsigned value = (high << 8) | low; // 显式移位组包，与主机 CPU 大小端无关。
+    printf("0x%04X\n", value); // 按四位十六进制显示还原值。
+    return 0; // 实际接线须查 SPI 模式或 I2C 地址、时序、字节顺序和超时要求。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 puts。
+enum State { IDLE, MEASURE, ERROR }; // 用枚举表示当前阶段，而不是一堆散乱的布尔值。
+int step(enum State *state, int event, int timeout) { // 一次调用处理一个事件并返回是否成功。
+    if (state == NULL) return 0; // 检查状态指针，避免非法访问。
+    if (*state < IDLE || *state > ERROR) return 0; // 非法状态应报告失败，不默默继续运行。
+    if (*state == MEASURE && timeout) { *state = ERROR; return 1; } // 测量状态优先处理超时。
+    if (*state == IDLE && event) { *state = MEASURE; return 1; } // 在空闲态收到事件，推进到测量态。
+    if (*state == ERROR && event) { *state = IDLE; return 1; } // 错误态收到恢复事件后才回到空闲态。
+    return 1; // 其他情况保持当前状态，下一轮主循环可继续处理。
+} // step 函数结束。
+int main(void) { // PC 模拟主循环的一次迭代。
+    enum State current = IDLE; // 初始状态为空闲。
+    step(&current, 1, 0); // 送入一个事件，只推进一步到 MEASURE。
+    if (current == MEASURE) puts("measure"); // 根据状态执行对应动作。
+    return 0; // 真实工程还应设计失败恢复和非法状态处理。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 printf。
+#include <stdint.h> // 声明 uint8_t。
+int main(void) { // PC 上模拟 DMA 写入完成后的读取。
+    uint8_t buffer[4] = {1u, 2u, 3u, 4u}; // 模拟接收缓冲区；真实 DMA 必须写在支持的内存区域。
+    unsigned received = 3u; // 实际有效长度为 3，不能默认整个数组都已收到。
+    int dma_complete = 1; // 模拟完成标志；真实工程需等待回调或查询状态。
+    unsigned sum = 0u; // 准备由 CPU 计算有效数据之和。
+    if (dma_complete) { // DMA 尚在写的区间不能让 CPU 同时当成稳定数据读取。
+        for (unsigned i = 0; i < received; ++i) sum += buffer[i]; // 只访问已确认完成的区间。
+    } // CPU 读取结束；双缓冲交换前须明确数据所有权。
+    printf("%u\n", sum); // 输出 PC 模拟结果。
+    return 0; // 真设备可能还需处理缓存一致性、对齐和 DMA 可访问区域。
+} // main 函数结束。`,
+String.raw`#include <stdio.h> // 声明 puts。
+int initialized_global = 3; // 有初值的全局对象通常由启动代码搬运初值。
+int zero_global; // 无显式初值的全局对象通常由启动代码清零。
+int main(void) { // 复位向量与启动文件初始化完成后才进入 main。
+    int index = 3; // 模拟调试时检查的数组下标。
+    if (index < 0 || index >= 4) { // 在读取数组前检查范围，避免越界引发异常。
+        puts("bad index"); // 对非法位置报告错误，而不是继续使用。
+        return 1; // 错误时退出 PC 演示。
+    } // 边界检查结束。
+    printf("%d %d\n", initialized_global, zero_global); // 验证静态对象已初始化和清零。
+    return 0; // 真正地址与栈顶可用链接 map、启动文件和芯片手册核对。
+} // 若进不了 main，应按复位、时钟、向量表和 HardFault 路径排查。`,
+String.raw`#include <stdio.h> // 声明 puts。
+int read_sensor(int *out) { // 驱动层用返回值表示成功与失败，用输出参数传数据。
+    if (out == NULL) return 0; // 输出指针无效时报告失败。
+    *out = 25; // PC 上模拟一次成功读取；真实驱动在此访问硬件。
+    return 1; // 返回 1 表示新样本有效。
+} // 驱动层结束，可在 PC 测试时替换模拟实现。
+int main(void) { // 业务层根据结果决定是否继续运行。
+    int temperature = 0; // 先准备接收新数据的位置，不把旧数据默认为有效。
+    int healthy = 0; // 记录关键任务这轮是否已经成功。
+    for (int attempt = 0; attempt < 3 && !healthy; ++attempt) { // 失败最多重试三次，避免无限循环。
+        healthy = read_sensor(&temperature); // 只有成功返回才认为得到新样本。
+    } // 本轮有限次读取结束。
+    if (!healthy) { // 三次都失败时不能继续使用旧温度。
+        puts("safe state"); // 根据需求告警、有限次重试或进入安全状态。
+        return 1; // 关键任务未健康时不应无条件喂看门狗。
+    } // 成功分支开始。
+    printf("%d\n", temperature); // 仅在成功时使用新温度。
+    puts("feed watchdog"); // 演示关键任务健康后才允许喂狗；真实喂狗调用依设备驱动而定。
+    return 0; // 本轮任务成功结束。
+} // main 函数结束。`
+];
+
+// This file is merged into c-learning-stage.html before delivery.
+const lessonTaskChecks = [
+T('按题意打印两行：name=Lin 和 goal=STM32。', '#include <stdio.h>\nint main(void){printf("name=Lin\\n");printf("goal=STM32\\n");return 0;}', [['','name=Lin goal=STM32']], '原任务可把 Lin 换成自己的名字，把 STM32 换成自己的方向；两行各用一次 printf。', ['printf']),
+T('声明 int mv=3300、double voltage=3.3、char state=\'R\'，按“3300 3.3 R”输出。', '#include <stdio.h>\nint main(void){int mv=3300;double voltage=3.3;char state=\'R\';printf("%d %.1f %c\\n",mv,voltage,state);return 0;}', [['','3300 3.3 R']], 'mv 是整数毫伏，voltage 是小数伏，state 是单字符。此课只需给变量固定初值，输入在下一课学习。', ['int','double','char','printf']),
+T('读入一个整数采样值，输出 scanf 成功读取的项目数和采样值，格式为 count value。', '#include <stdio.h>\nint main(void){int sample=0;int count=scanf("%d",&sample);printf("%d %d\\n",count,sample);return 0;}', [['42','1 42'],['abc','0 0']], 'scanf 读入整数时传 &sample；返回值 1 代表读到一项。下一课学习条件表达式，第 5 课再用 if 分支处理输入失败。', ['scanf','printf']),
+T('读入 n，若 n 在 0 到 4095（含边界）输出 1，否则输出 0。', '#include <stdio.h>\nint main(void){int n;scanf("%d",&n);printf("%d\\n",n>=0&&n<=4095);return 0;}', [['0','1'],['4095','1'],['4096','0'],['-1','0']], '两侧都比较：n>=0 排除负数，n<=4095 排除过大值，再用 && 连接；条件真假可作为 1/0 输出。', ['>=','<=','&&']),
+T('读入温度；低于 20 输出 cold，20 到 29 输出 warm，30 及以上输出 hot。', '#include <stdio.h>\nint main(void){int t;scanf("%d",&t);if(t<20)puts("cold");else if(t<30)puts("warm");else puts("hot");return 0;}', [['19','cold'],['20','warm'],['29','warm'],['30','hot']], '按从低到高的顺序写 if / else if / else；走到第二个条件时已知温度至少为 20。', ['if','else']),
+T('读入 n，用 for 求 1 到 n 的偶数和，再用 while 独立算一遍，输出两个结果。', '#include <stdio.h>\nint main(void){int n,a=0,b=0;scanf("%d",&n);for(int i=2;i<=n;i+=2)a+=i;int i=2;while(i<=n){b+=i;i+=2;}printf("%d %d\\n",a,b);return 0;}', [['6','12 12'],['1','0 0'],['10','30 30']], '两次计算分别从 2 开始、每次加 2；第二次先把结果和计数器重新初始化。', ['for','while']),
+T('读入 n，依次输出 1 到 n；跳过 3，遇到 6 就停止，每个数字后面留空格。', '#include <stdio.h>\nint main(void){int n;scanf("%d",&n);for(int i=1;i<=n;i++){if(i==3)continue;if(i==6)break;printf("%d ",i);}return 0;}', [['8','1 2 4 5'],['4','1 2 4']], '先判断跳过 3，再判断到 6 停止；continue 跳过本轮，break 结束循环。', ['continue','break']),
+T('读入 2 行 3 列的 6 个整数，输出第二行的总和。', '#include <stdio.h>\nint main(void){int a[2][3];for(int r=0;r<2;r++)for(int c=0;c<3;c++)scanf("%d",&a[r][c]);printf("%d\\n",a[1][0]+a[1][1]+a[1][2]);return 0;}', [['1 2 3 4 5 6','15'],['0 0 0 -2 4 9','11']], '第二行的下标是 1；列下标依次是 0、1、2。', ['[2][3]','[1]']),
+T('声明可容纳 8 个可见字符的数组，存入短字符串 C，输出字符串及还能增加的可见字符数。', '#include <stdio.h>\nint main(void){char s[9]="C";printf("%s %zu\\n",s,sizeof s-1-1);return 0;}', [['','C 7']], '数组需 9 字节：8 个字符加结尾零；当前 C 用了 1 个可见字符，还可增加 7 个。本题暂不使用下一课的 strlen。', ['char','sizeof','%s']),
+T('读入不超过 7 字符的单词，复制到 char dst[8]；放得下输出 copied:单词。', '#include <stdio.h>\n#include <string.h>\nint main(void){char src[8],dst[8];scanf("%7s",src);if(strlen(src)+1<=sizeof dst){strcpy(dst,src);printf("copied:%s\\n",dst);}return 0;}', [['cat','copied:cat'],['abcdefg','copied:abcdefg']], '先用 strlen(src)+1 计算连结束符所需空间，再与 sizeof dst 比较，最后 strcpy。', ['strlen','sizeof','strcpy']),
+T('先声明后定义 multiply，读入两个整数并输出乘积。', '#include <stdio.h>\nint multiply(int,int);\nint main(void){int a,b;scanf("%d%d",&a,&b);printf("%d\\n",multiply(a,b));return 0;}\nint multiply(int a,int b){return a*b;}', [['3 4','12'],['-2 5','-10']], '声明放在 main 前，定义可放在 main 后，调用时传两个实参。', ['multiply','return']),
+T('写 int divide(int a,int b) 返回整数商，再写 void show_result(int) 输出商；读入两个整数，保证 b 非 0。', '#include <stdio.h>\nint divide(int a,int b){return a/b;}\nvoid show_result(int value){printf("%d\\n",value);}\nint main(void){int a,b;scanf("%d%d",&a,&b);show_result(divide(a,b));return 0;}', [['8 2','4'],['-7 2','-3'],['9 3','3']], '两个 int 参数按值传入；divide 返回计算结果，show_result 负责输出且无返回值。第 15 课学指针后再用输出参数处理除数为 0。', ['int divide','void show_result']),
+T('读入 0 到 8 的 n，用 for 循环计算 n!，输出结果。', '#include <stdio.h>\nint main(void){int n,result=1;scanf("%d",&n);for(int i=2;i<=n;i++)result*=i;printf("%d\\n",result);return 0;}', [['0','1'],['4','24'],['8','40320']], '递归需要保存每层参数和返回位置；for 只保留当前 i 与 result。', ['for','result']),
+T('写跨调用计数函数，连续调用三次后逐行输出 1、2、3。', '#include <stdio.h>\nint next(void){static int count=0;return ++count;}\nint main(void){for(int i=0;i<3;i++)printf("%d\\n",next());return 0;}', [['','1 2 3']], 'static 局部变量只初始化一次，每次调用保留上次结果。', ['static']),
+T('写 set_zero(int *p)，读入整数，调用后输出变为 0 的原变量。', '#include <stdio.h>\nvoid set_zero(int *p){*p=0;}\nint main(void){int n;scanf("%d",&n);set_zero(&n);printf("%d\\n",n);return 0;}', [['9','0'],['-3','0']], '把 n 的地址传入函数，通过 *p 修改原变量。', ['int *p','&n']),
+T('读入 4 个 int，不用下标访问元素，使用指针遍历并输出总和。', '#include <stdio.h>\nint main(void){int a[4],sum=0;for(int i=0;i<4;i++)scanf("%d",a+i);for(int *p=a;p<a+4;p++)sum+=*p;printf("%d\\n",sum);return 0;}', [['1 2 3 4','10'],['-1 3 0 8','10']], 'a+i 指向第 i 个元素；指针 p 从 a 走到 a+4 前，逐个解引用。', ['int *p','*p']),
+T('实现 clamp(int *value,int low,int high)，读入值、下限、上限，输出修正后的值。', '#include <stdio.h>\nvoid clamp(int *p,int low,int high){if(*p<low)*p=low;else if(*p>high)*p=high;}\nint main(void){int x,lo,hi;scanf("%d%d%d",&x,&lo,&hi);clamp(&x,lo,hi);printf("%d\\n",x);return 0;}', [['-2 0 10','0'],['12 0 10','10'],['5 0 10','5']], '比较 *value 而不是指针地址；调用时传 &x。', ['int *','&x']),
+T('用二级指针把空的 int *head 指向第一个静态节点，输出节点值。', '#include <stdio.h>\nvoid set_head(int **head,int *node){*head=node;}\nint main(void){static int first=7;int *head=NULL;set_head(&head,&first);printf("%d\\n",*head);return 0;}', [['','7']], '静态节点不会在函数返回时消失；*head 修改调用者的头指针。', ['int **','*head']),
+T('定义 Sample 结构体：通道号、原始 ADC 值、有效标志；读入前两项并输出三个字段，有效标志设 1。', '#include <stdio.h>\nstruct Sample{int channel;int raw;int valid;};\nint main(void){struct Sample s;scanf("%d%d",&s.channel,&s.raw);s.valid=1;printf("%d %d %d\\n",s.channel,s.raw,s.valid);return 0;}', [['2 2048','2 2048 1'],['0 0','0 0 1']], '用点号访问结构体对象的成员；初始化三个字段后再输出。', ['struct Sample','.valid']),
+T('实现 update_score(struct Player *p,int score)，读入原分数和新分数，修改后输出新分数。', '#include <stdio.h>\nstruct Player{int score;};\nvoid update_score(struct Player *p,int score){p->score=score;}\nint main(void){struct Player p;int n;scanf("%d%d",&p.score,&n);update_score(&p,n);printf("%d\\n",p.score);return 0;}', [['10 90','90'],['50 0','0']], '通过 -> 写入 p 指向的原对象，函数返回后改动仍在。', ['struct Player *','->']),
+T('设计 IDLE、MEASURING、ERROR 三态，读入 0/1/2，用 switch 分别输出 idle、measure、error。', '#include <stdio.h>\nenum State{IDLE,MEASURING,ERROR};\nint main(void){int n;scanf("%d",&n);switch((enum State)n){case IDLE:puts("idle");break;case MEASURING:puts("measure");break;default:puts("error");}return 0;}', [['0','idle'],['1','measure'],['2','error']], '枚举值默认从 0 开始；每个 case 末尾用 break，其他值可交给 default。', ['enum','switch']),
+T('设计含 tag 和 union 的消息；读入 tag 与 value，0 输出 temperature=值，1 输出 error=值。', '#include <stdio.h>\nunion Value{int temperature;int error;};\nstruct Message{int tag;union Value value;};\nint main(void){struct Message m;int x;scanf("%d%d",&m.tag,&x);if(m.tag==0){m.value.temperature=x;printf("temperature=%d\\n",m.value.temperature);}else{m.value.error=x;printf("error=%d\\n",m.value.error);}return 0;}', [['0 25','temperature=25'],['1 7','error=7']], 'tag 记录当前有效成员；写哪个成员，就从同一个成员读取。', ['union','tag']),
+T('给结构体 Sample 起 typedef 别名，并让 print_sample(Sample s) 输出读入的 value。', '#include <stdio.h>\ntypedef struct{int value;} Sample;\nvoid print_sample(Sample s){printf("%d\\n",s.value);}\nint main(void){Sample s;scanf("%d",&s.value);print_sample(s);return 0;}', [['8','8'],['-2','-2']], '别名 Sample 可用于变量和函数形参，它没有改变结构体的底层布局。', ['typedef','Sample']),
+T('读入 flags，把第 3 位设 1、第 1 位清 0，再输出更新后的值和第 3 位是否为 1。', '#include <stdio.h>\nint main(void){unsigned flags;scanf("%u",&flags);flags|=1u<<3;flags&=~(1u<<1);printf("%u %u\\n",flags,(flags&(1u<<3))!=0);return 0;}', [['0','8 1'],['2','8 1'],['16','24 1']], '置位用 |，清位用 &~，检查用 &；位号从 0 开始。', ['|=','&=','<<']),
+T('定义 BIT(n) 宏，读入 flags 后设置第 2 位并输出结果。', '#include <stdio.h>\n#define BIT(n) (1u<<(n))\nint main(void){unsigned flags;scanf("%u",&flags);flags|=BIT(2);printf("%u\\n",flags);return 0;}', [['0','4'],['8','12']], '宏形参 n 和整段位移表达式都加括号；不要把带 ++ 的表达式交给会重复求值的宏。', ['#define BIT','|=']),
+T('定义 DEBUG 为 0 时输出 release，改成 1 时应输出 debug；本题提交 0 版本。', '#include <stdio.h>\n#define DEBUG 0\nint main(void){\n#if DEBUG\nputs("debug");\n#else\nputs("release");\n#endif\nreturn 0;}', [['','release']], '未定义 DEBUG 时用 #ifdef 为假；定义为 0 时 #ifdef 仍为真，#if DEBUG 才为假；定义为 1 时两者为真。', ['#if DEBUG','#else']),
+T('声明指向常量 int 的指针和不能改指向的指针；输出两者指向的值。', '#include <stdio.h>\nint main(void){int a=3,b=4;const int *read_only=&a;int *const fixed=&a;read_only=&b;printf("%d %d\\n",*read_only,*fixed);return 0;}', [['','4 3']], 'const int *p 不能通过 p 改值，但能改指向；int *const q 能改所指对象，但 q 本身不能重新赋地址。', ['const int *','int *const']),
+T('声明全局变量、static 局部变量和普通局部数组，输出三者的值。', '#include <stdio.h>\nint global=1;\nint main(void){static int saved=2;int local[1]={3};printf("%d %d %d\\n",global,saved,local[0]);return 0;}', [['','1 2 3']], '参考图：global 与 static 是静态存储期；local 是自动存储期。动态内存申请的具体写法在下一课学习；实际栈/堆位置由实现决定。', ['static','local']),
+T('读入 n，申请 n 个 int 并初始化为 0，输出最后一个元素，随后释放；n 为 0 时输出 0。', '#include <stdio.h>\n#include <stdlib.h>\nint main(void){int n;scanf("%d",&n);if(n<=0){puts("0");return 0;}int *a=malloc((size_t)n*sizeof *a);if(!a)return 1;for(int i=0;i<n;i++)a[i]=0;printf("%d\\n",a[n-1]);free(a);return 0;}', [['3','0'],['1','0'],['0','0']], '先检查 n 与 malloc 返回值；访问前逐个初始化；所有成功申请的路径都 free 一次。', ['malloc','free','sizeof']),
+T('申请一个 int；读入 n，若 n<0 则先释放再输出 rejected，否则输出 n 后释放。', '#include <stdio.h>\n#include <stdlib.h>\nint main(void){int n;scanf("%d",&n);int *p=malloc(sizeof *p);if(!p)return 1;*p=n;if(n<0){free(p);puts("rejected");return 0;}printf("%d\\n",*p);free(p);return 0;}', [['-1','rejected'],['5','5']], '逐条检查 return：申请失败时没有对象可释放；申请成功后的早退与正常结束都要 free。', ['malloc','free']),
+T('用 tmpfile 写入输入的采样整数，回到开头读取并输出；失败时输出 error，最后关闭文件。', '#include <stdio.h>\nint main(void){int x,y;scanf("%d",&x);FILE *f=tmpfile();if(!f){puts("error");return 0;}if(fprintf(f,"%d",x)<0||fseek(f,0,SEEK_SET)!=0||fscanf(f,"%d",&y)!=1)puts("error");else printf("%d\\n",y);fclose(f);return 0;}', [['42','42'],['-7','-7']], 'PC 文件可用 fopen("sample.txt","w") 写、再用 "r" 读；本题用 tmpfile 避免覆盖用户文件。STM32 需换成可用的 Flash/SD/串口存储接口。', ['tmpfile','fclose']),
+T('读入 n，先声明后定义 double_value 函数，输出 n 的两倍。', '#include <stdio.h>\nint double_value(int n);\nint main(void){int n;scanf("%d",&n);printf("%d\\n",double_value(n));return 0;}\nint double_value(int n){return n*2;}', [['3','6'],['-4','-8']], '缺分号属于编译阶段语法错误；找不到头文件常在预处理阶段暴露；只有声明没有函数定义，常到链接阶段报未定义引用。', ['declaration','definition']),
+T('使用头文件保护宏风格声明 sensor_read，在 main 后定义；读入值，输出值加 1。', '#include <stdio.h>\n#ifndef SENSOR_H\n#define SENSOR_H\nint sensor_read(int x);\n#endif\nint main(void){int n;scanf("%d",&n);printf("%d\\n",sensor_read(n));return 0;}\nint sensor_read(int x){return x+1;}', [['4','5'],['-2','-1']], '实际多文件工程：sensor.h 放带保护宏的声明；sensor.c 放唯一定义和 static 私有状态；main.c 包含 sensor.h 并调用。', ['#ifndef','sensor_read']),
+T('读入 16 位十六进制数，显式拆成高、低字节，再还原，按“高 低 原数”输出大写十六进制。', '#include <stdio.h>\nint main(void){unsigned n;scanf("%x",&n);unsigned hi=(n>>8)&255u,lo=n&255u,back=(hi<<8)|lo;printf("%02X %02X %04X\\n",hi,lo,back);return 0;}', [['1234','12 34 1234'],['ABCD','AB CD ABCD']], '显式移位/掩码不依赖主机大小端；接收端用 (hi<<8)|lo 还原。', ['>>','<<','|']),
+T('创建 1→3→5 链表，在 3 后插入 4，遍历输出 1 3 4 5。', '#include <stdio.h>\nstruct Node{int v;struct Node *next;};\nint main(void){struct Node d={5,NULL},c={3,&d},b={1,&c},x={4,NULL};x.next=c.next;c.next=&x;for(struct Node *p=&b;p;p=p->next)printf("%d ",p->v);return 0;}', [['','1 3 4 5']], '先让新节点 next 指向原后继，再让 3 的 next 指向新节点；交换这两步可能丢失链。', ['struct Node','next']),
+T('容量 4 的循环队列，依次入 1、2，出 1，再入 3，输出剩余队列顺序。', '#include <stdio.h>\nint main(void){int q[4],head=0,tail=0;q[tail++]=1;q[tail++]=2;head=(head+1)%4;q[tail++]=3;while(head!=tail){printf("%d ",q[head]);head=(head+1)%4;}return 0;}', [['','2 3']], '手算后队列里是 2、3；实现中 head 指向下一次出队位置，tail 指向下一次入队位置。', ['head','tail']),
+T('在有序数组 {2,4,6,8,10} 中二分查找读入的目标值，输出下标，找不到输出 -1。', '#include <stdio.h>\nint main(void){int a[5]={2,4,6,8,10},x,lo=0,hi=4;scanf("%d",&x);while(lo<=hi){int mid=lo+(hi-lo)/2;if(a[mid]==x){printf("%d\\n",mid);return 0;}if(a[mid]<x)lo=mid+1;else hi=mid-1;}puts("-1");return 0;}', [['8','3'],['2','0'],['7','-1']], '查找 8：初始 [0,4]、中点 2 值为 6；缩成 [3,4]、中点 3 命中。', ['while','mid']),
+T('电脑模拟 STM32 工程步骤：先输出 clock，再输出 gpio，最后输出 app。', '#include <stdio.h>\nint main(void){puts("clock");puts("gpio");puts("app");return 0;}', [['','clock gpio app']], '上板参考：确认芯片完整型号与板号；在工程中找 main.c、启动文件、链接脚本；记录 SystemClock_Config 和一个 MX_..._Init 函数；再核对手册。', ['puts']),
+T('读入 0..255 的 sample，将 sample+1 存回 uint8_t，并输出十进制结果。', '#include <stdio.h>\n#include <stdint.h>\nint main(void){unsigned n;scanf("%u",&n);uint8_t sample=(uint8_t)n;uint8_t next=(uint8_t)(sample+1u);printf("%u\\n",(unsigned)next);return 0;}', [['255','0'],['254','255']], '255 的二进制为 11111111；加 1 后按 8 位无符号范围回绕为 00000000。', ['uint8_t']),
+T('读入 raw、full_scale、vref_mv，先扩大到 64 位计算 raw*vref_mv/full_scale，输出整数毫伏。', '#include <stdio.h>\nint main(void){unsigned raw,full,vref;scanf("%u%u%u",&raw,&full,&vref);unsigned long long mv=(unsigned long long)raw*vref/full;printf("%llu\\n",mv);return 0;}', [['4095 4095 3300','3300'],['2048 4095 3300','1650']], '先转宽再乘；整数除法舍去小数；raw 与 full_scale 应保证合法且 full_scale 不为 0。', ['unsigned long long']),
+T('模拟输出寄存器：读入初值，把第 3 位置 1，再把第 1 位清 0，输出结果。', '#include <stdio.h>\nint main(void){unsigned reg;scanf("%u",&reg);reg|=1u<<3;reg&=~(1u<<1);printf("%u\\n",reg);return 0;}', [['0','8'],['2','8'],['18','24']], '查真实寄存器时记录地址、位号、读写属性；写 1 清零位不能照搬普通读改写公式。', ['|=','&=']),
+T('模拟低电平有效按键：读入引脚电平，0 输出 pressed，1 输出 released。', '#include <stdio.h>\nint main(void){int pin;scanf("%d",&pin);puts(pin==0?"pressed":"released");return 0;}', [['0','pressed'],['1','released']], '上板先查原理图确认 LED/按键的端口、引脚和有效电平；在 CubeMX 设置输入上拉/下拉和输出模式；把用户逻辑放在可保留区。', ['pin']),
+T('读入采样个数及 0/1 序列，连续 2 次为 1 才产生一次按下事件，输出事件数。', '#include <stdio.h>\nint main(void){int n,c=0,stable=0,events=0;scanf("%d",&n);for(int i=0;i<n;i++){int x;scanf("%d",&x);if(x)c++;else{c=0;stable=0;}if(c>=2&&!stable){stable=1;events++;}}printf("%d\\n",events);return 0;}', [['5 0 1 1 1 0','1'],['5 1 1 0 1 1','2'],['3 1 0 1','0']], '以固定采样周期取样；候选值连续两次确认后才改稳定状态；由未按下转为按下时只记一次事件。', ['stable','events']),
+T('读入 last、now、period，按无符号计数差判断到期；到期输出 due。', '#include <stdio.h>\n#include <stdint.h>\nint main(void){uint32_t last,now,period;scanf("%u%u%u",&last,&now,&period);puts((uint32_t)(now-last)>=period?"due":"wait");return 0;}', [['100 148 50','wait'],['100 150 50','due'],['4294967280 32 40','due']], '原题 48<50，因此未到期；真实工程还需确认 SysTick 频率，并让 period 小于可安全比较的回绕范围。', ['uint32_t','now-last']),
+T('模拟中断置位与主循环取事件：读入 0/1，事件为 1 输出 handle，否则输出 idle。', '#include <stdio.h>\nint main(void){int event;scanf("%d",&event);if(event)puts("handle");else puts("idle");return 0;}', [['1','handle'],['0','idle']], 'ISR 只记录事件；主循环取走并清除时应按芯片/编译器方案做临界区或原子交换。volatile 只约束访问优化，不能保证 ++ 或复合操作原子。', ['event','if']),
+T('容量 4 的环形缓冲区预留一格；读入 n 个整数，最多存前 3 个并按顺序输出。', '#include <stdio.h>\nint main(void){int n,q[4],head=0,tail=0;scanf("%d",&n);for(int i=0;i<n;i++){int x;scanf("%d",&x);int next=(head+1)%4;if(next!=tail){q[head]=x;head=next;}}while(tail!=head){printf("%d ",q[tail]);tail=(tail+1)%4;}return 0;}', [['2 7 8','7 8'],['5 1 2 3 4 5','1 2 3']], '空：head==tail；满：head 下一格等于 tail。若由中断与主循环并发访问，还要检查下标访问原子性。', ['head','tail']),
+T('读入 8 个 ADC 结果，用 uint32_t 求和并输出整数平均值。', '#include <stdio.h>\n#include <stdint.h>\nint main(void){uint32_t sum=0;for(int i=0;i<8;i++){unsigned x;scanf("%u",&x);sum+=x;}printf("%u\\n",sum/8u);return 0;}', [['4095 4095 4095 4095 4095 4095 4095 4095','4095'],['0 1 2 3 4 5 6 7','3']], '8×4095=32760，uint32_t 足够；实际 ADC 精度仍受参考电压、采样时间与电路影响。', ['uint32_t','sum']),
+T('读入百分比 percent 与 arr，先把百分比限制到 0..100，再输出比较值 percent*(arr+1)/100。', '#include <stdio.h>\nint main(void){unsigned p,arr;scanf("%u%u",&p,&arr);if(p>100)p=100;unsigned long long cmp=(unsigned long long)p*((unsigned long long)arr+1u)/100u;printf("%llu\\n",cmp);return 0;}', [['25 99','25'],['120 99','100'],['0 999','0']], '先限制百分比，再用足够宽的整数做乘法；真实 PWM 模式、极性与边界以具体定时器配置为准。', ['percent','arr']),
+T('读入高字节和低字节（十六进制），组为 16 位整数并输出十进制。', '#include <stdio.h>\nint main(void){unsigned hi,lo;scanf("%x%x",&hi,&lo);printf("%u\\n",(hi<<8)|lo);return 0;}', [['12 34','4660'],['00 FF','255']], '组包前先从器件手册确认 SPI/I2C 地址、模式、字节顺序和收到长度；本题高字节在前，与主机大小端无关。', ['<<','|']),
+T('状态机模拟：读入 state、timeout；state=1 且 timeout=1 输出 error，state=1 且无超时输出 measure，其他输出 idle。', '#include <stdio.h>\nint main(void){int state,timeout;scanf("%d%d",&state,&timeout);if(state==1&&timeout)puts("error");else if(state==1)puts("measure");else puts("idle");return 0;}', [['1 1','error'],['1 0','measure'],['0 1','idle']], 'MEASURE 分支先检查超时，再做测量步骤；一次 step 只推进一个状态动作。', ['state','timeout']),
+T('模拟 DMA 接收：读入总长度、有效长度及所有字节，只计算有效区间的和。', '#include <stdio.h>\nint main(void){int n,valid,sum=0;scanf("%d%d",&n,&valid);for(int i=0;i<n;i++){int x;scanf("%d",&x);if(i<valid)sum+=x;}printf("%d\\n",sum);return 0;}', [['4 2 1 2 100 100','3'],['3 3 4 5 6','15']], '实际 DMA 完成前 CPU 不应读取未写完的数据；双缓冲交换前确认完成，所有权一次只给一方写。', ['valid','sum']),
+T('模拟调试检查：读入程序是否进入 main（0/1），1 输出 main reached，0 输出 check startup。', '#include <stdio.h>\nint main(void){int reached;scanf("%d",&reached);puts(reached?"main reached":"check startup");return 0;}', [['1','main reached'],['0','check startup']], '先确认完整芯片型号；检查启动文件的向量表/栈顶、链接脚本和 map 文件；若未到 main，再查复位、时钟和 HardFault。', ['main','startup']),
+T('模拟读传感器重试：读入连续失败次数，最多尝试 3 次；3 次内成功输出 ok，否则输出 safe。', '#include <stdio.h>\nint main(void){int failures;scanf("%d",&failures);puts(failures<3?"ok":"safe");return 0;}', [['0','ok'],['2','ok'],['3','safe'],['5','safe']], '重试必须有上限；失败后标记样本无效，不能继续用旧温度；关键任务健康时才允许喂看门狗。', ['failures','safe'])
+];
+function T(prompt,answer,cases,guide,focus){return {prompt,answer,cases,guide,focus}}
+
+lessons[4].keys.push("条件运算符 条件 ? 真值 : 假值，可在两个结果之间选择。");
+lessonDepth[2].task="读取一个整数，输出 scanf 成功读取的项目数和采样值；先观察输入正确与错误时的差别。";
+lessonDepth[2].hint="先把采样值初始化为 0，再用 scanf 的 %d 格式与 &sample 读取，把返回值保存到 count，最后用 printf 输出 count 和 sample。";
+lessonDepth[2].pit="输入失败后直接使用未初始化的 n 会得到不确定值；读 int 用 %d 与 &n，读 double 用 %lf 与变量地址。";
+lessonDepth[11].task="写 int divide(int a,int b) 返回整数商，再写 void show_result(int) 输出结果；测试时保证 b 非 0。";
+lessonDepth[11].hint="先写两个普通参数的 divide 函数，再写无返回值的 show_result；此课不需要指针。";
+lessonDepth[11].pit="返回类型不是 void 时要保证需要返回的路径有值；做整数除法时除数不能是 0。";
+lessonDepth[23].task="用 unsigned flags，把第 3 位设 1、第 1 位清 0，再判断第 3 位；固定宽度类型稍后在单片机阶段学习。";
+const walkFix={3:"a/b 是整数商 2，a%b 是余数 1；括号改变计算顺序；后面依次演示 ==、&&、|| 和 !。",5:"for 从 1 累加到 3；while 把 n 递减到 0；do-while 先执行一次，再检查是否继续。",7:"a[0] 是 2；table[1][2] 是第二行第三列的 6；本地数组可用 sizeof 计算长度。",8:"word 有 9 字节容量，先存 C 和结束符，再写入字符 8 并移动结束符；两个 %s 都能安全停止。",15:"show 的数组形参实际是指针，长度另传；*(a+i) 与 a[i] 取得同一元素。",19:"p->x 是 (*p).x 的简写；先检查 p 是否为 NULL，再通过指针修改原结构体。",20:"IDLE 默认是 0；RUNNING 显式赋值 3，ERROR 随后递增到 4；if 使用枚举名判断状态。",21:"标签 tag 说明最近写入哪个 union 成员；sizeof 展示共享存储的大小，随后改写另一个成员。",22:"Count 是 unsigned long 的别名；Point 是结构体的别名，sizeof 比较证明别名不改变底层类型。",23:"1u<<2 构造无符号掩码，|= 置位，& 测试，&=~ 清位；不要对负数或超宽位数做移位。",25:"#ifndef 保护声明；#ifdef DEBUG 在 DEBUG=0 时仍为真，而 #if DEBUG 为假，选择 release。",26:"逐行区分文件内 static、局部 static、const、volatile 和 extern；它们分别影响可见性、存储期或访问规则。",33:"strcpy 复制带结束符的字符串；memcpy 复制指定字节数，重叠时用 memmove；显式移位拆字节，再观察内存首字节与 sizeof 的对齐影响。",36:"先冒泡排好序，再分别用线性查找和二分查找；二分每轮更新 lo、hi，找不到返回 -1。",39:"把 raw 先转为 uint64_t 再乘参考电压，最后做整数除法；负数错误码要先在有符号域检查。",41:"输入引脚为 0 才代表按下，随后决定 LED 指令；实际有效电平和端口必须从开发板资料确认。"};
+for(const [i,walk] of Object.entries(walkFix))(lessonDepth[i]||lessons[i]).walk=walk;
 function lessonCheckCard(mode,check,i){
 const id=i+':'+mode,passed=state.lessonPractice.includes(id),pit=mode==='pit';
-return `<div class="lesson-check" id="lesson-${mode}-card"><div class="row"><b>${pit?'改错题':'编程题'}</b><span class="tag ${passed?'green':''}" id="lesson-${mode}-badge">${passed?'已通过':'待完成'}</span></div><p>${pit?'修复下面的错误代码，使它满足要求：':'不复制示例，从空白写出完整程序：'}${esc(check.prompt)}</p><textarea id="lesson-${mode}-code" spellcheck="false" aria-label="${pit?'改错题':'编程题'}代码">${pit?esc(check.broken):''}</textarea><div class="toolbar"><button class="btn primary" data-lesson-check="${mode}">编译并判题</button><span class="muted">重点：${esc(check.focus.join('、'))}</span></div><div class="feedback" id="lesson-${mode}-feedback"></div><details class="answer"><summary>查看参考代码</summary><pre>${esc(check.answer)}</pre></details></div>`
+return `<div class="lesson-check" id="lesson-${mode}-card"><div class="row"><b>${pit?'改错题':'编程题'}</b><span class="tag ${passed?'green':''}" id="lesson-${mode}-badge">${passed?'已通过':'待完成'}</span></div><p>${pit?'修复下面的错误代码，使它满足要求：':'根据上方“自己动手”任务编写程序；涉及实物的课程在电脑完成下述模拟题：'}${esc(check.prompt)}</p><textarea id="lesson-${mode}-code" spellcheck="false" aria-label="${pit?'改错题':'编程题'}代码">${pit?esc(check.broken):''}</textarea><div class="toolbar"><button class="btn primary" data-lesson-check="${mode}">编译并判题</button><span class="muted">重点：${esc(check.focus.join('、'))}</span></div><div class="feedback" id="lesson-${mode}-feedback"></div><details class="answer"><summary>查看参考代码</summary><pre>${esc(check.answer)}</pre></details></div>`
 }
 async function submitLessonCheck(i,mode){
-const check=lessonChecks[i],id=i+':'+mode,area=$('#lesson-'+mode+'-code'),button=$('[data-lesson-check="'+mode+'"]'),target=$('#lesson-'+mode+'-feedback'),code=area.value.trim();
+const check=mode==='pit'?lessonChecks[i]:lessonTaskChecks[i],id=i+':'+mode,area=$('#lesson-'+mode+'-code'),button=$('[data-lesson-check="'+mode+'"]'),target=$('#lesson-'+mode+'-feedback'),code=area.value.trim();
 if(!code){target.innerHTML='<span class="wrong">先写完整 C 程序，再提交判题。</span>';return}
 button.disabled=true;button.textContent='正在编译和运行…';target.innerHTML='<span class="muted">正在发送到判题服务…</span>';
 const outcome=await judgeCode(code,mode==='pit'?[check.cases[0]]:check.cases);
@@ -1175,7 +1894,7 @@ const quizSimilar=[
 [["队列按先进先出的顺序取出元素。",true],["栈按后进先出的顺序弹出元素。",true],["普通队列总是后入队的元素先出队。",false]],
 [["二分查找通常要求待查区间已排序。",true],["二分查找每轮可排除约一半候选元素。",true],["对未排序数组直接二分查找也一定正确。",false]]
 ];
-const KEY="cStart.v1";const blank=()=>({done:[],practice:[],exam:null,examCount:0,wrong:[],practiceWrong:[],lessonPractice:[],lessonWrong:[]});function load(){try{return Object.assign(blank(),JSON.parse(localStorage.getItem(KEY)||"{}"))}catch{return blank()}}let state=load();let selectedLesson=0,reviewIndex=-1,reviewRound=-1;
+const KEY="cStart.v1";const blank=()=>({done:[],practice:[],exam:null,examCount:0,wrong:[],practiceWrong:[],lessonPractice:[],lessonWrong:[]});function load(){try{return Object.assign(blank(),JSON.parse(localStorage.getItem(KEY)||"{}"))}catch{return blank()}}let state=load();if(!state.taskChecksV2){state.lessonPractice=state.lessonPractice.filter(id=>!id.endsWith(":task"));state.lessonWrong=state.lessonWrong.filter(id=>!id.endsWith(":task"));state.taskChecksV2=true;localStorage.setItem(KEY,JSON.stringify(state))}let selectedLesson=0,reviewIndex=-1,reviewRound=-1;
 const $=s=>document.querySelector(s),$$=s=>Array.from(document.querySelectorAll(s));function save(){localStorage.setItem(KEY,JSON.stringify(state));renderProgress()}function toast(s){const t=$("#toast");t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800)}
 const pageScroll={};let pageSwitch=0;
 function showPage(name){
@@ -1191,13 +1910,13 @@ requestAnimationFrame(()=>{if(token===pageSwitch)window.scrollTo(0,pageScroll[na
 $$('.nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));$$('[data-go]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.go)));$('.brand').addEventListener('click',e=>{e.preventDefault();showPage('home')});
 function renderLessonList(filter=""){let html="",phaseNames={1:"第一阶段 · 基础语法",2:"第二阶段 · 核心语法",3:"第三阶段 · 进阶与面试重点",4:"第四阶段 · 数据结构",5:"第五阶段 · STM32 与电子信息"};[1,2,3,4,5].forEach(ph=>{const rows=lessons.map((x,i)=>({...x,i})).filter(x=>x.phase===ph&&x.title.toLowerCase().includes(filter.toLowerCase()));if(!rows.length)return;html+=`<div class="phasehead">${phaseNames[ph]}</div>`+rows.map(x=>`<button class="lessonlink ${selectedLesson===x.i?'sel':''} ${state.done.includes(x.i)?'done':''}" data-lesson="${x.i}"><span class="num">${state.done.includes(x.i)?'✓':x.i+1}</span><span>${esc(x.title)}</span></button>`).join("")});$("#lessonList").innerHTML=html;$$('[data-lesson]').forEach(b=>b.onclick=()=>{selectedLesson=Number(b.dataset.lesson);renderLessonList($("#lessonSearch").value);renderLesson()})}
 function renderLesson(){
-const l=lessons[selectedLesson],d=lessonDepth[selectedLesson]||l,done=state.done.includes(selectedLesson),check=lessonChecks[selectedLesson];
-$("#lessonDetail").innerHTML=`<div class="row"><span class="tag">第 ${selectedLesson+1} 课 · 阶段 ${l.phase}</span><span class="muted">共 ${lessons.length} 课</span></div><h2>${esc(l.title)}</h2><p class="lede">先读懂，再预测代码行为，最后自己写。</p>${l.phase===5?'<div class="callout">本课示例用普通 C 模拟单片机逻辑，可先在电脑编译；真实 STM32 的引脚、寄存器和驱动配置必须按具体型号与开发板资料调整。</div>':''}<h3>通俗解释</h3><div class="human">${esc(l.say)}</div><h3>深入理解</h3><p>${esc(d.why)}</p><h3>代码示例 <button class="btn codecopy" data-copy-lesson>复制代码</button></h3><pre class="codebox"><code>${esc(l.code)}</code></pre><h3>示例拆解</h3><p>${esc(d.walk)}</p><h3>关键点</h3><ul class="keylist">${l.keys.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><h3>容易踩坑</h3><div class="callout">${esc(d.pit)}</div>${lessonCheckCard("pit",check,selectedLesson)}<h3>自己动手</h3><div class="question">${esc(d.task)}</div><details class="answer"><summary>任务提示（先自己做）</summary><p>${esc(d.hint)}</p></details>${lessonCheckCard("task",check,selectedLesson)}<p class="muted">课堂题提交需要联网，代码会发送到线上编译服务；STM32 课程使用电脑可运行的模拟题。</p><h3>面试可能问</h3><div class="question">${esc(l.ask)}<details class="answer interview-answer"><summary>查看参考解答（电脑悬停 / 手机点击）</summary><p>${esc(interviewAnswers[selectedLesson])}</p></details></div><div class="actions"><button class="btn ${done?'':'primary'}" id="markLesson">${done?'✓ 已标记完成':'标记本课完成'}</button>${selectedLesson<lessons.length-1?`<button class="btn" id="nextLesson">下一课 →</button>`:''}</div>`;
+const l=lessons[selectedLesson],d=lessonDepth[selectedLesson]||l,done=state.done.includes(selectedLesson),check=lessonChecks[selectedLesson],taskCheck=lessonTaskChecks[selectedLesson],demo=lessonDemoCodes[selectedLesson];
+$("#lessonDetail").innerHTML=`<div class="row"><span class="tag">第 ${selectedLesson+1} 课 · 阶段 ${l.phase}</span><span class="muted">共 ${lessons.length} 课</span></div><h2>${esc(l.title)}</h2><p class="lede">先读懂，再预测代码行为，最后自己写。</p>${l.phase===5?'<div class="callout">本课示例用普通 C 模拟单片机逻辑，可先在电脑编译；真实 STM32 的引脚、寄存器和驱动配置必须按具体型号与开发板资料调整。</div>':''}<h3>通俗解释</h3><div class="human">${esc(l.say)}</div><h3>深入理解</h3><p>${esc(d.why)}</p><h3>代码示例 <button class="btn codecopy" data-copy-lesson>复制代码</button></h3><pre class="codebox"><code>${esc(demo)}</code></pre><h3>示例拆解</h3><p>${esc(d.walk)}</p><h3>关键点</h3><ul class="keylist">${l.keys.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><h3>容易踩坑</h3><div class="callout">${esc(d.pit)}</div>${lessonCheckCard("pit",check,selectedLesson)}<h3>自己动手</h3><div class="question">${esc(d.task)}</div><details class="answer"><summary>任务提示（先自己做）</summary><p>${esc(d.hint)}</p></details><details class="answer"><summary>原任务参考步骤 / 答案</summary><p>${esc(taskCheck.guide)}</p></details>${lessonCheckCard("task",taskCheck,selectedLesson)}<p class="muted">课堂题提交需要联网，代码会发送到线上编译服务；STM32 课程使用电脑可运行的模拟题。</p><h3>面试可能问</h3><div class="question">${esc(l.ask)}<details class="answer interview-answer"><summary>查看参考解答（电脑悬停 / 手机点击）</summary><p>${esc(interviewAnswers[selectedLesson])}</p></details></div><div class="actions"><button class="btn ${done?'':'primary'}" id="markLesson">${done?'✓ 已标记完成':'标记本课完成'}</button>${selectedLesson<lessons.length-1?`<button class="btn" id="nextLesson">下一课 →</button>`:''}</div>`;
 $$("#lessonDetail [data-lesson-check]").forEach(b=>b.onclick=()=>submitLessonCheck(selectedLesson,b.dataset.lessonCheck));
 const interview=$("#lessonDetail .interview-answer");
 interview.addEventListener("pointerenter",e=>{if(e.pointerType==="mouse")interview.open=true});
 interview.addEventListener("pointerleave",e=>{if(e.pointerType==="mouse")interview.open=false});
-$("[data-copy-lesson]").onclick=()=>copy(l.code);
+$("[data-copy-lesson]").onclick=()=>copy(demo);
 $("#markLesson").onclick=()=>{if(done)state.done=state.done.filter(x=>x!==selectedLesson);else state.done.push(selectedLesson);save();renderLessonList($("#lessonSearch").value);renderLesson();toast(done?'已取消完成标记':'课程进度已保存')};
 if($("#nextLesson"))$("#nextLesson").onclick=()=>{selectedLesson++;renderLessonList($("#lessonSearch").value);renderLesson();$("#lessonDetail").scrollIntoView({behavior:'smooth'})};
 }
