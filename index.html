@@ -2209,6 +2209,210 @@ function renderExamWrongReview(){
 }
 $('#clearWrong').addEventListener('click',()=>{state.examWrongV2=[];examReview=null;save()});
 
+// 实操页专用题库；课堂题库 lessonChecks / lessonTaskChecks 保持原样。
+const practiceProgram=(body,head='#include <stdio.h>')=>`${head}\nint main(void){\n${body}\nreturn 0;\n}`;
+const fixTask=(prompt,body,cases,right,wrong,focus,head)=>{
+  const answer=practiceProgram(body,head);
+  if(!answer.includes(right))throw Error(`改错题缺少待修改代码：${prompt}`);
+  return {prompt,answer,broken:answer.replace(right,wrong),cases,focus:[focus]};
+};
+const writeTask=(prompt,body,cases,focus,head)=>({prompt,answer:practiceProgram(body,head),cases,focus:[focus]});
+const independentPractice=[
+  [fixTask('修复程序，使它只输出一行 C ready。',String.raw`printf("C ready\n");`,[['','C ready']], 'C ready','C stop','printf'),
+   writeTask('写完整程序，依次输出三行 BEGIN、LEARN、END。',String.raw`printf("BEGIN\nLEARN\nEND\n");`,[['','BEGIN LEARN END']],'printf')],
+  [fixTask('已知计数 6、电压 1.25，修复初值并输出 6 1.25。',String.raw`int count=6;double volts=1.25;printf("%d %.2f\n",count,volts);`,[['','6 1.25']],'count=6','count=5','int 和 double'),
+   writeTask('声明字符级别 B 和无符号掩码 7，输出 B 7；本题不读取输入。',String.raw`char level='B';unsigned mask=7;printf("%c %u\n",level,mask);`,[['','B 7']],'char 和 unsigned')],
+  [fixTask('输入一个整数，修复计算并输出它的三倍。',String.raw`int n;scanf("%d",&n);printf("%d\n",n*3);`,[['4','12'],['-2','-6']],'n*3','n+3','scanf 与 printf'),
+   writeTask('输入两个整数，依次输出差值 a-b 和乘积 a*b，中间一个空格。',String.raw`int a,b;scanf("%d%d",&a,&b);printf("%d %d\n",a-b,a*b);`,[['8 3','5 24'],['-2 4','-6 -8']],'两次输入')],
+  [fixTask('输入 a、b，计算 a+2*b；修复括号导致的优先级错误。',String.raw`int a,b;scanf("%d%d",&a,&b);printf("%d\n",a+2*b);`,[['3 4','11'],['7 2','11']],'a+2*b','(a+2)*b','乘法优先级'),
+   writeTask('输入 a、b，输出 (a+b) 对 3 的余数，输入保证和非负。',String.raw`int a,b;scanf("%d%d",&a,&b);printf("%d\n",(a+b)%3);`,[['5 4','0'],['2 3','2']],'括号与 %')],
+  [fixTask('输入命令 0、1、2 或其他值；依次应输出 off、low、high、invalid。修复分支。',String.raw`int n;scanf("%d",&n);if(n==0)puts("off");else if(n==1)puts("low");else if(n==2)puts("high");else puts("invalid");`,[['0','off'],['1','low'],['2','high'],['9','invalid']],'n==2','n==3','else if'),
+   writeTask('输入整数，负数输出 negative，零输出 zero，正数输出 positive。',String.raw`int n;scanf("%d",&n);if(n<0)puts("negative");else if(n==0)puts("zero");else puts("positive");`,[['-4','negative'],['0','zero'],['5','positive']],'if / else')],
+  [fixTask('输入非负整数 n，统计 1 到 n 中 3 的倍数个数；修复循环边界。',String.raw`int n,count=0;scanf("%d",&n);for(int i=1;i<=n;i++)if(i%3==0)count++;printf("%d\n",count);`,[['3','1'],['10','3'],['0','0']],'i<=n','i<n','for 边界'),
+   writeTask('输入 0 到 10 的 n，用 while 求 1²+2²+…+n²。',String.raw`int n,i=1,sum=0;scanf("%d",&n);while(i<=n){sum+=i*i;i++;}printf("%d\n",sum);`,[['3','14'],['0','0'],['5','55']],'while 累加')],
+  [fixTask('从 1 输出到 n，跳过 4 的倍数，遇到 9 停止；修复误用的控制语句。数字间空格。',String.raw`int n;scanf("%d",&n);for(int i=1;i<=n;i++){if(i==9)break;if(i%4==0)continue;printf("%d ",i);}`, [['5','1 2 3 5'],['12','1 2 3 5 6 7']], 'if(i%4==0)continue','if(i%4==0)break','continue'),
+   writeTask('输入最多 6 个整数；遇到 -1 停止，忽略 0，输出停止前正数的个数。',String.raw`int count=0;for(int i=0;i<6;i++){int x;scanf("%d",&x);if(x==-1)break;if(x==0)continue;if(x>0)count++;}printf("%d\n",count);`,[['2 0 5 -1','2'],['0 -1','0'],['3 4 5 6 7 8','6']],'break 和 continue')],
+  [fixTask('输入 2×2 矩阵，输出主对角线的和；修复错误下标。',String.raw`int a[2][2];for(int r=0;r<2;r++)for(int c=0;c<2;c++)scanf("%d",&a[r][c]);printf("%d\n",a[0][0]+a[1][1]);`,[['1 2 3 4','5'],['7 1 2 -3','4']],'a[1][1]','a[1][0]','二维数组下标'),
+   writeTask('输入 4 个整数放入数组，输出其中最大值。',String.raw`int a[4];for(int i=0;i<4;i++)scanf("%d",&a[i]);int max=a[0];for(int i=1;i<4;i++)if(a[i]>max)max=a[i];printf("%d\n",max);`,[['1 8 3 4','8'],['-5 -2 -9 -4','-2']],'一维数组')],
+  [fixTask('把四个字符 BOOT 存成 C 字符串并输出；修复少写的一个字母。',String.raw`char s[5]="BOOT";printf("%s\n",s);`,[['','BOOT']],'"BOOT"','"BOO"','结尾零字节'),
+   writeTask('输入长度不超过 7 的单词，不用 string.h，输出首字符和末字符，中间空格。',String.raw`char s[8];scanf("%7s",s);int i=0;while(s[i+1]!='\0')i++;printf("%c %c\n",s[0],s[i]);`,[['code','c e'],['A','A A']],'字符数组与结束符')],
+  [fixTask('输入一个不超过 10 字符的单词，修复 strlen 的结果，使输出为字符数加 1。',String.raw`char s[11];scanf("%10s",s);printf("%zu\n",strlen(s)+1);`,[['abc','4'],['X','2']],'strlen(s)+1','strlen(s)-1','strlen','#include <stdio.h>\n#include <string.h>'),
+   writeTask('输入两个长度不超过 7 的单词，拼接后输出；目标数组要装下两词和结束符。',String.raw`char a[17],b[8];scanf("%7s%7s",a,b);strcat(a,b);puts(a);`,[['ab cd','abcd'],['C 123','C123']],'strcat','#include <stdio.h>\n#include <string.h>')],
+  [fixTask('先声明 cube 再定义它，输入整数并输出立方；修复函数体的计算。',String.raw`int n;scanf("%d",&n);printf("%d\n",cube(n));`,[['3','27'],['-2','-8']],'return x*x*x;','return x*x;','函数声明','#include <stdio.h>\nint cube(int);\nint cube(int x){return x*x*x;}'),
+   writeTask('定义函数 is_even，输入整数，偶数输出 yes，否则输出 no。',String.raw`int n;scanf("%d",&n);puts(is_even(n)?"yes":"no");`,[['8','yes'],['7','no']],'函数定义','#include <stdio.h>\nint is_even(int x){return x%2==0;}')],
+  [fixTask('函数 diff 返回 a-b；输入两个整数并输出结果，修复参数顺序。',String.raw`int a,b;scanf("%d%d",&a,&b);printf("%d\n",diff(a,b));`,[['9 4','5'],['1 5','-4']],'return a-b;','return b-a;','参数与返回值','#include <stdio.h>\nint diff(int a,int b){return a-b;}'),
+   writeTask('定义 void show_double(int)，输出参数的两倍；主函数读入一个整数并调用它。',String.raw`int x;scanf("%d",&x);show_double(x);`,[['4','8'],['-3','-6']],'void 函数','#include <stdio.h>\nvoid show_double(int x){printf("%d\n",x*2);}')],
+  [fixTask('用递归求 1 到 n 的和，n 在 0..10；修复递归步长。',String.raw`int n;scanf("%d",&n);printf("%d\n",sum(n));`,[['0','0'],['4','10'],['6','21']],'sum(n-1)','sum(n-2)','递归终止','#include <stdio.h>\nint sum(int n){if(n==0)return 0;return n+sum(n-1);}'),
+   writeTask('递归计算 2 的 n 次方，n 在 0..10；输入 n 后输出结果。',String.raw`int n;scanf("%d",&n);printf("%d\n",power2(n));`,[['0','1'],['3','8'],['5','32']],'递归调用','#include <stdio.h>\nint power2(int n){return n==0?1:2*power2(n-1);}')],
+  [fixTask('全局初值为 10；函数每次给它加 2，连续调用三次后输出 16，修复步长。',String.raw`advance();advance();advance();printf("%d\n",total);`,[['','16']],'total+=2','total+=1','全局变量','#include <stdio.h>\nint total=10;\nvoid advance(void){total+=2;}'),
+   writeTask('函数内部用 static 保留值，从 5 开始每次加 3；连续调用两次，输出两次结果。',String.raw`int a=next(),b=next();printf("%d %d\n",a,b);`,[['','8 11']],'static 生命周期','#include <stdio.h>\nint next(void){static int n=5;n+=3;return n;}')],
+  [fixTask('通过指针给输入值加 5 并输出；修复误改指针本身的代码。',String.raw`int x;scanf("%d",&x);add5(&x);printf("%d\n",x);`,[['2','7'],['-5','0']],'*p+=5','p+=5','解引用','#include <stdio.h>\nvoid add5(int *p){*p+=5;}'),
+   writeTask('通过指针把负数改为 0，非负数保持不变；读入一个整数并输出。',String.raw`int x;scanf("%d",&x);clamp(&x);printf("%d\n",x);`,[['-3','0'],['7','7']],'指针传参','#include <stdio.h>\nvoid clamp(int *p){if(*p<0)*p=0;}')],
+  [fixTask('输入 5 个整数，用指针统计正数个数；修复指针递增漏掉最后一项。',String.raw`int a[5];for(int i=0;i<5;i++)scanf("%d",&a[i]);int count=0;for(int *p=a;p<a+5;p++)if(*p>0)count++;printf("%d\n",count);`,[['-1 0 2 3 4','3'],['1 1 1 1 1','5']],'p<a+5','p<a+4','指针范围'),
+   writeTask('输入 4 个整数，用指针从数组尾部向前输出，数字间用空格。',String.raw`int a[4];for(int i=0;i<4;i++)scanf("%d",&a[i]);for(int *p=a+4;p>a;){--p;printf("%d ",*p);}`,[['1 2 3 4','4 3 2 1'],['-1 0 7 8','8 7 0 -1']],'指针移动')],
+  [fixTask('定义函数指针，根据 mode 为 0/1 执行加一或减一；修复选错函数。',String.raw`int mode,x;scanf("%d%d",&mode,&x);int (*op)(int)=mode?dec:inc;printf("%d\n",op(x));`,[['0 5','6'],['1 5','4']],'mode?dec:inc','mode?inc:dec','函数指针','#include <stdio.h>\nint inc(int x){return x+1;}\nint dec(int x){return x-1;}'),
+   writeTask('使用函数指针调用三倍函数：输入一个整数并输出三倍。',String.raw`int x;scanf("%d",&x);int (*fn)(int)=triple;printf("%d\n",fn(x));`,[['3','9'],['-2','-6']],'函数指针调用','#include <stdio.h>\nint triple(int x){return x*3;}')],
+  [fixTask('用二级指针将 p 指向较大的整数；修复选小的条件。',String.raw`int a,b;scanf("%d%d",&a,&b);int *p=&a;choose_max(&p,&a,&b);printf("%d\n",*p);`,[['3 8','8'],['9 2','9']],'*a>=*b','*a<=*b','二级指针','#include <stdio.h>\nvoid choose_max(int **p,int *a,int *b){*p=*a>=*b?a:b;}'),
+   writeTask('用 swap_ptr(int**,int**) 交换两个指针的指向，输入 a、b，输出交换后两指针解引用的值。',String.raw`int a,b;scanf("%d%d",&a,&b);int *p=&a,*q=&b;swap_ptr(&p,&q);printf("%d %d\n",*p,*q);`,[['4 7','7 4'],['-1 5','5 -1']],'二级指针参数','#include <stdio.h>\nvoid swap_ptr(int **p,int **q){int *t=*p;*p=*q;*q=t;}')],
+  [fixTask('结构体 Sensor 保存 id 和毫伏值，输入两项后输出 id:毫伏；修复读错成员。',String.raw`struct Sensor s;scanf("%d%d",&s.id,&s.mv);printf("%d:%d\n",s.id,s.mv);`,[['2 3300','2:3300'],['7 1200','7:1200']],'s.id,s.mv','s.mv,s.id','结构体成员','#include <stdio.h>\nstruct Sensor{int id,mv;};'),
+   writeTask('结构体 Point 保存 x、y，输入坐标并输出曼哈顿距离 |x|+|y|。',String.raw`struct Point p;scanf("%d%d",&p.x,&p.y);int x=p.x<0?-p.x:p.x,y=p.y<0?-p.y:p.y;printf("%d\n",x+y);`,[['3 -4','7'],['-2 -5','7']],'结构体成员','#include <stdio.h>\nstruct Point{int x,y;};')],
+  [fixTask('通过结构体指针给 level 加 1，但最大为 5；修复上限比较。',String.raw`struct Device d;scanf("%d",&d.level);raise(&d);printf("%d\n",d.level);`,[['4','5'],['5','5']],'p->level<5','p->level<=5','结构体指针','#include <stdio.h>\nstruct Device{int level;};\nvoid raise(struct Device *p){if(p->level<5)p->level++;}'),
+   writeTask('结构体指针读取两个成员 width、height，输入两数后输出面积。',String.raw`struct Rect r;scanf("%d%d",&r.width,&r.height);struct Rect *p=&r;printf("%d\n",p->width*p->height);`,[['3 4','12'],['5 2','10']],'箭头运算符','#include <stdio.h>\nstruct Rect{int width,height;};')],
+  [fixTask('枚举状态 IDLE=0、BUSY=2、DONE=3；输入状态值，输出对应英文名或 invalid。修复 DONE 数值。',String.raw`int x;scanf("%d",&x);enum State s=(enum State)x;switch(s){case IDLE:puts("idle");break;case BUSY:puts("busy");break;case DONE:puts("done");break;default:puts("invalid");}`, [['0','idle'],['2','busy'],['3','done'],['1','invalid']],'DONE=3','DONE=4','枚举显式值','#include <stdio.h>\nenum State{IDLE=0,BUSY=2,DONE=3};'),
+   writeTask('定义枚举 RED、YELLOW、GREEN 为 0、1、2；输入编号并输出 red、yellow、green。',String.raw`int x;scanf("%d",&x);enum Light s=(enum Light)x;if(s==RED)puts("red");else if(s==YELLOW)puts("yellow");else puts("green");`,[['0','red'],['1','yellow'],['2','green']],'enum','#include <stdio.h>\nenum Light{RED,YELLOW,GREEN};')],
+  [fixTask('联合体按 tag=0 存整数 code，tag=1 存不含空格的短文本；输入后输出对应标签。修复输出标签。',String.raw`int tag;scanf("%d",&tag);union Packet p;if(tag==0){scanf("%d",&p.code);printf("code=%d\n",p.code);}else{scanf("%11s",p.text);printf("text=%s\n",p.text);}`, [['0 42','code=42'],['1 OK','text=OK']],'text=%s','code=%s','联合体有效成员','#include <stdio.h>\nunion Packet{int code;char text[12];};'),
+   writeTask('联合体 Number 按 tag=0 存整数、tag=1 存一位小数，输入后分别输出 I:值 或 F:值。',String.raw`int tag;scanf("%d",&tag);union Number n;if(tag==0){scanf("%d",&n.whole);printf("I:%d\n",n.whole);}else{scanf("%f",&n.frac);printf("F:%.1f\n",n.frac);}`, [['0 -5','I:-5'],['1 2.5','F:2.5']],'union 共用存储','#include <stdio.h>\nunion Number{int whole;float frac;};')],
+  [fixTask('把 unsigned short 定义为 Sample；输入值并输出该别名变量加 1 的结果，修复别名底层类型。',String.raw`Sample x;scanf("%hu",&x);printf("%u\n",(unsigned)x+1u);`,[['9','10'],['100','101']],'unsigned short','unsigned char','typedef','#include <stdio.h>\ntypedef unsigned short Sample;'),
+   writeTask('用 typedef 给函数指针起名 Op；输入两数，经 Op 调用乘法函数并输出积。',String.raw`int a,b;scanf("%d%d",&a,&b);Op fn=multiply;printf("%d\n",fn(a,b));`,[['3 4','12'],['-2 5','-10']],'typedef 函数指针','#include <stdio.h>\ntypedef int (*Op)(int,int);\nint multiply(int a,int b){return a*b;}')],
+  [fixTask('输入无符号整数 x 和位号 k（0..7），把第 k 位置 1 后输出十进制；修复按位操作。',String.raw`unsigned x,k;scanf("%u%u",&x,&k);x|=1u<<k;printf("%u\n",x);`,[['0 3','8'],['8 3','8'],['1 1','3']],'x|=1u<<k','x&=1u<<k','按位或置位'),
+   writeTask('输入无符号整数 x 和位号 k（0..7），翻转第 k 位后输出十进制。',String.raw`unsigned x,k;scanf("%u%u",&x,&k);printf("%u\n",x^(1u<<k));`,[['8 3','0'],['0 2','4']],'异或翻转')],
+  [fixTask('定义 MAX(a,b) 宏，输入两整数并输出较大值；修复比较方向。',String.raw`int a,b;scanf("%d%d",&a,&b);printf("%d\n",MAX(a,b));`,[['2 7','7'],['-3 -8','-3']],'((a)>(b)?(a):(b))','((a)<(b)?(a):(b))','带括号的宏','#include <stdio.h>\n#define MAX(a,b) ((a)>(b)?(a):(b))'),
+   writeTask('定义 SCALE(x) 宏，把输入 a+b 的结果乘 100，输出整数。',String.raw`int a,b;scanf("%d%d",&a,&b);printf("%d\n",SCALE(a+b));`,[['2 3','500'],['-1 4','300']],'带参数宏','#include <stdio.h>\n#define SCALE(x) ((x)*100)')],
+  [fixTask('设置 VERSION 为 3，编译时版本大于等于 3 输出 new，否则 old；修复条件。',String.raw`#if VERSION>=3
+puts("new");
+#else
+puts("old");
+#endif
+`,[['','new']],'VERSION>=3','VERSION>3','条件编译','#include <stdio.h>\n#define VERSION 3'),
+   writeTask('若未定义 BOARD，就在编译时选择输出 simulator；不要依赖运行时输入。',String.raw`#ifndef BOARD
+puts("simulator");
+#else
+puts("board");
+#endif
+`,[['','simulator']],'#ifndef','#include <stdio.h>')],
+  [fixTask('文件内 static 初值 4，函数每次加 2；输入调用次数 n，输出最终值。修复增量。',String.raw`int n;scanf("%d",&n);for(int i=0;i<n;i++)step();printf("%d\n",total);`,[['0','4'],['2','8']],'total+=2','total+=3','static 存储期','#include <stdio.h>\nstatic int total=4;\nvoid step(void){total+=2;}'),
+   writeTask('定义全局 sensor=7；在 main 中用 extern 声明它，读入增量并输出更新后的值。',String.raw`extern int sensor;int delta;scanf("%d",&delta);sensor+=delta;printf("%d\n",sensor);`,[['3','10'],['-2','5']],'extern 声明','#include <stdio.h>\nint sensor=7;')],
+  [fixTask('静态存储区中未显式初始化的全局计数初值应为 0；输入增量后输出结果。修复重复加一。',String.raw`int delta;scanf("%d",&delta);counter+=delta;printf("%d\n",counter);`,[['3','3'],['-2','-2']],'counter+=delta','counter+=delta+1','零初始化','#include <stdio.h>\nstatic int counter;'),
+   writeTask('全局变量初值 9；函数把它减 2，调用两次后输出 5，演示跨函数共享存储。',String.raw`down();down();printf("%d\n",level);`,[['','5']],'全局数据区','#include <stdio.h>\nint level=9;\nvoid down(void){level-=2;}')],
+  [fixTask('用 malloc 申请 n 个整数，依次存 0、2、4…，求和后释放；修复申请字节数。',String.raw`int n;scanf("%d",&n);int *a=malloc((size_t)n*sizeof *a);if(!a)return 1;int sum=0;for(int i=0;i<n;i++){a[i]=i*2;sum+=a[i];}printf("%d\n",sum);free(a);`,[['1','0'],['4','12'],['5','20']],'n*sizeof *a','n*sizeof(char)','malloc 字节数','#include <stdio.h>\n#include <stdlib.h>'),
+   writeTask('用 malloc 申请 n+1 个 char，填入 n 个大写字母 A、B、C…，补结束符并输出，最后释放；n 为 1..5。',String.raw`int n;scanf("%d",&n);char *s=malloc((size_t)n+1u);if(!s)return 1;for(int i=0;i<n;i++)s[i]=(char)('A'+i);s[n]='\0';puts(s);free(s);`,[['1','A'],['4','ABCD']],'malloc 与 free','#include <stdio.h>\n#include <stdlib.h>')],
+  [fixTask('连续申请两个整数，各存输入的值；相加后释放两块内存，修复漏掉的一次 free。',String.raw`int x,y;scanf("%d%d",&x,&y);int *a=malloc(sizeof *a),*b=malloc(sizeof *b);if(!a||!b){free(a);free(b);return 1;}*a=x;*b=y;printf("%d\n",*a+*b);free(a);free(b);`,[['2 7','9'],['-3 1','-2']],'free(a);free(b);','free(a);','每次申请都要释放','#include <stdio.h>\n#include <stdlib.h>'),
+   writeTask('动态申请 3 个整数，读入三项并求最大值；释放数组后输出最大值，不再访问已释放内存。',String.raw`int *p=malloc(3u*sizeof *p);if(!p)return 1;for(int i=0;i<3;i++)scanf("%d",&p[i]);int max=p[0];for(int i=1;i<3;i++)if(p[i]>max)max=p[i];free(p);p=NULL;printf("%d\n",max);`,[['3 7 2','7'],['-5 -2 -9','-2']],'释放后不再解引用','#include <stdio.h>\n#include <stdlib.h>')],
+  [fixTask('用临时文件写入两个整数，再从头读出并输出和；修复忘记回到文件开头。',String.raw`int a,b,x,y;scanf("%d%d",&a,&b);FILE *f=tmpfile();if(!f)return 1;fprintf(f,"%d %d",a,b);rewind(f);fscanf(f,"%d%d",&x,&y);fclose(f);printf("%d\n",x+y);`,[['2 5','7'],['-1 4','3']],'rewind(f);','/* missing rewind */','rewind','#include <stdio.h>'),
+   writeTask('把固定文本 SENSOR 写入临时文件，回到开头用 fgets 读出并输出，再 fclose。',String.raw`char text[16];FILE *f=tmpfile();if(!f)return 1;fputs("SENSOR\n",f);rewind(f);if(fgets(text,sizeof text,f))printf("%s",text);fclose(f);`,[['','SENSOR']],'fgets 与 fclose')],
+  [fixTask('模拟构建流程：按预处理、编译、汇编、链接的顺序输出四行；修复步骤顺序。',String.raw`puts("preprocess");puts("compile");puts("assemble");puts("link");`,[['','preprocess compile assemble link']],'puts("assemble");puts("link");','puts("link");puts("assemble");','编译阶段顺序'),
+   writeTask('先声明后定义 encode；函数给输入加 100，主函数调用后输出，体现声明与定义分开。',String.raw`int x;scanf("%d",&x);printf("%d\n",encode(x));`,[['1','101'],['-2','98']],'声明与定义','#include <stdio.h>\nint encode(int);\nint encode(int x){return x+100;}')],
+  [fixTask('用 INCLUDE_GUARD 风格保护常量声明；主函数输出该常量的值，修复错误宏条件。',String.raw`printf("%d\n",PIN_COUNT);`,[['','16']],'#ifndef PIN_INFO_H','#ifdef PIN_INFO_H','头文件保护','#include <stdio.h>\n#ifndef PIN_INFO_H\n#define PIN_INFO_H\n#define PIN_COUNT 16\n#endif'),
+   writeTask('在一个文件里模拟接口声明与实现：先声明 convert(int)，main 调用它；convert 把输入乘 10。',String.raw`int x;scanf("%d",&x);printf("%d\n",convert(x));`,[['4','40'],['0','0']],'函数原型','#include <stdio.h>\nint convert(int);\nint convert(int x){return x*10;}')],
+  [fixTask('对字符数组 ABCD 使用 memmove，让第 2 到第 4 个位置右移一格，得到 AABC；修复字节数。',String.raw`char s[5]="ABCD";memmove(s+1,s,3);puts(s);`,[['','AABC']],'memmove(s+1,s,3)','memmove(s+1,s,2)','重叠复制','#include <stdio.h>\n#include <string.h>'),
+   writeTask('读入十六进制 32 位整数，按从高到低顺序输出四个字节（两位大写十六进制）。',String.raw`unsigned x;scanf("%x",&x);printf("%02X %02X %02X %02X\n",(x>>24)&255u,(x>>16)&255u,(x>>8)&255u,x&255u);`,[['12345678','12 34 56 78'],['000000FF','00 00 00 FF']],'移位拆字节')],
+  [fixTask('创建 2→4→6 的链表，删除中间节点后遍历输出 2 6；修复 next 连接。',String.raw`struct Node a={2,NULL},b={4,NULL},c={6,NULL};a.next=&b;b.next=&c;a.next=&c;for(struct Node *p=&a;p;p=p->next)printf("%d ",p->v);`,[['','2 6']],'a.next=&c','a.next=&b','单链表删除','#include <stdio.h>\nstruct Node{int v;struct Node *next;};'),
+   writeTask('输入目标值，在 5→10→15 链表中查找；找到输出 1，否则输出 0。',String.raw`int x;scanf("%d",&x);struct Node c={15,NULL},b={10,&c},a={5,&b};int found=0;for(struct Node *p=&a;p;p=p->next)if(p->v==x)found=1;printf("%d\n",found);`,[['10','1'],['8','0']],'遍历 next','#include <stdio.h>\nstruct Node{int v;struct Node *next;};')],
+  [fixTask('栈先压入 4、7、9，再弹出一次；输出剩余栈顶 7，修复弹出方向。',String.raw`int stack[3]={4,7,9},top=3;top--;printf("%d\n",stack[top-1]);`,[['','7']],'top--;','top++;','栈顶下标'),
+   writeTask('队列按顺序入队 1、2、3、4，出队两次后输出队首和队尾，格式为 3 4。',String.raw`int q[4]={1,2,3,4},head=0,tail=4;head++;head++;printf("%d %d\n",q[head],q[tail-1]);`,[['','3 4']],'先进先出')],
+  [fixTask('输入 4 个整数，用选择排序升序输出；修复选择最小值的比较方向。',String.raw`int a[4];for(int i=0;i<4;i++)scanf("%d",&a[i]);for(int i=0;i<4;i++){int m=i;for(int j=i+1;j<4;j++)if(a[j]<a[m])m=j;int t=a[i];a[i]=a[m];a[m]=t;}for(int i=0;i<4;i++)printf("%d ",a[i]);`,[['3 1 4 2','1 2 3 4'],['-2 5 0 -1','-2 -1 0 5']],'a[j]<a[m]','a[j]>a[m]','选择排序'),
+   writeTask('输入 5 个整数和目标值，线性查找目标第一次出现的下标；没有则输出 -1。',String.raw`int a[5],x,at=-1;for(int i=0;i<5;i++)scanf("%d",&a[i]);scanf("%d",&x);for(int i=0;i<5;i++)if(a[i]==x){at=i;break;}printf("%d\n",at);`,[['2 8 2 4 5 2','0'],['1 3 5 7 9 8','-1']],'线性查找'),],
+  [fixTask('电脑模拟板级初始化：时钟成功且 GPIO 成功才输出 app；修复条件运算符。',String.raw`int clock_ok,gpio_ok;scanf("%d%d",&clock_ok,&gpio_ok);puts(clock_ok&&gpio_ok?"app":"blocked");`,[['1 1','app'],['1 0','blocked'],['0 1','blocked']],'clock_ok&&gpio_ok','clock_ok||gpio_ok','初始化顺序'),
+   writeTask('模拟硬件就绪检查：输入晶振和外设两个标志；二者都就绪输出 ready，否则输出 wait。',String.raw`int osc,periph;scanf("%d%d",&osc,&periph);if(osc&&periph)puts("ready");else puts("wait");`,[['1 1','ready'],['0 1','wait']],'STM32 初始化状态')],
+  [fixTask('读入 0..65535 的整数，存入 uint16_t 后加 1 并转回 uint16_t，输出回绕结果；修复漏转。',String.raw`unsigned x;scanf("%u",&x);uint16_t value=(uint16_t)x;value=(uint16_t)(value+1u);printf("%u\n",(unsigned)value);`,[['65535','0'],['42','43']],'value=(uint16_t)(value+1u)','value=(uint16_t)(value+2u)','uint16_t 回绕','#include <stdio.h>\n#include <stdint.h>'),
+   writeTask('读入 0..255 的数放进 uint8_t；判断最高位是否为 1，输出 1 或 0。',String.raw`unsigned x;scanf("%u",&x);uint8_t byte=(uint8_t)x;printf("%u\n",(unsigned)((byte&0x80u)!=0));`,[['127','0'],['128','1'],['255','1']],'uint8_t 位掩码','#include <stdio.h>\n#include <stdint.h>')],
+  [fixTask('输入无符号基准值 base 和有符号误差 delta，转成 64 位后相加；修复提前无符号计算。',String.raw`unsigned base;int delta;scanf("%u%d",&base,&delta);long long result=(long long)base+delta;printf("%lld\n",result);`,[['2 -5','-3'],['100 7','107']],'(long long)base+delta','(unsigned)base+delta','有符号换算'),
+   writeTask('输入有符号误差 error 与正的无符号阈值 limit；按有符号域比较绝对误差是否超过阈值，输出 1 或 0。',String.raw`int error;unsigned limit;scanf("%d%u",&error,&limit);long long magnitude=error<0?-(long long)error:error;printf("%d\n",magnitude>(long long)limit);`,[['-8 5','1'],['3 5','0']],'先处理负号再比较')],
+  [fixTask('输入寄存器初值：将第 5 位置 1、第 0 位清 0，输出十进制；修复清位掩码。',String.raw`unsigned reg;scanf("%u",&reg);reg|=1u<<5;reg&=~(1u<<0);printf("%u\n",reg);`,[['0','32'],['1','32'],['3','34']],'~(1u<<0)','(1u<<0)','寄存器位操作'),
+   writeTask('读入寄存器初值和 0..15 的字段值；把字段写入寄存器第 8..11 位，其余位不变。',String.raw`unsigned reg,value;scanf("%u%u",&reg,&value);reg=(reg&~(15u<<8))|((value&15u)<<8);printf("%u\n",reg);`,[['0 5','1280'],['65535 0','61695']],'字段掩码')],
+  [fixTask('模拟高电平点亮的 LED：输入开关状态 0/1，输出 led-on 或 led-off；修复极性。',String.raw`int sw;scanf("%d",&sw);puts(sw?"led-on":"led-off");`,[['1','led-on'],['0','led-off']],'sw?"led-on":"led-off"','sw?"led-off":"led-on"','GPIO 有效电平'),
+   writeTask('模拟 LED 输出：输入 enable、fault 两个 0/1 标志；只有允许且无故障时输出 on，否则 off。',String.raw`int enable,fault;scanf("%d%d",&enable,&fault);puts(enable&&!fault?"on":"off");`,[['1 0','on'],['1 1','off'],['0 0','off']],'GPIO 状态条件')],
+  [fixTask('输入 n 个 0/1 采样，统计从 1 变为 0 的下降沿次数；修复前一状态更新位置。',String.raw`int n,prev=0,count=0;scanf("%d",&n);for(int i=0;i<n;i++){int x;scanf("%d",&x);if(prev==1&&x==0)count++;prev=x;}printf("%d\n",count);`,[['5 0 1 0 1 0','2'],['4 1 1 0 0','1']],'if(prev==1&&x==0)count++;prev=x;','prev=x;if(prev==1&&x==0)count++;','边沿检测'),
+   writeTask('输入 n 个 0/1 采样，统计持续至少 3 个采样周期的高电平片段数量（模拟长按次数）。',String.raw`int n,run=0,count=0;scanf("%d",&n);for(int i=0;i<n;i++){int x;scanf("%d",&x);if(x)run++;else{if(run>=3)count++;run=0;}}if(run>=3)count++;printf("%d\n",count);`,[['7 1 1 1 1 0 1 1','1'],['7 1 1 1 0 1 1 1','2'],['4 1 0 1 0','0']],'持续时间与边沿')],
+  [fixTask('给定 uint32_t 的上次和当前计数及周期，输出已经经过多少个完整周期；修复无符号时间差。',String.raw`uint32_t last,now,period;scanf("%u%u%u",&last,&now,&period);printf("%u\n",(uint32_t)(now-last)/period);`,[['100 250 50','3'],['4294967290 14 10','2']],'now-last','last-now','计数器回绕','#include <stdio.h>\n#include <stdint.h>'),
+   writeTask('模拟两个非阻塞任务：输入 elapsed、periodA、periodB，分别输出 A、B 是否到期（1 或 0）。',String.raw`unsigned elapsed,a,b;scanf("%u%u%u",&elapsed,&a,&b);printf("%d %d\n",elapsed>=a,elapsed>=b);`,[['150 100 200','1 0'],['500 100 200','1 1']],'独立任务周期')],
+  [fixTask('模拟中断累计事件：输入触发次数 n，ISR 每次给 pending 加 1；修复 ISR 的更新。',String.raw`int n;scanf("%d",&n);for(int i=0;i<n;i++)irq();printf("%u\n",pending);`,[['0','0'],['3','3']],'pending++;','pending+=2;','volatile 不保证原子性','#include <stdio.h>\nvolatile unsigned pending=0;\nvoid irq(void){pending++;}'),
+   writeTask('模拟两个中断源设置事件位：输入 UART 和 TIMER 的 0/1 状态，输出组合后的事件掩码（UART=1，TIMER=2）。',String.raw`int uart,timer;scanf("%d%d",&uart,&timer);unsigned events=0;if(uart)events|=1u;if(timer)events|=2u;printf("%u\n",events);`,[['1 0','1'],['1 1','3'],['0 0','0']],'事件位掩码')],
+  [fixTask('容量 5 的环形缓冲区预留一个槽；读入 n 个字节，输出成功入队数量；修复满的判断。',String.raw`int n,head=0,tail=0,accepted=0;scanf("%d",&n);for(int i=0;i<n;i++){int byte;scanf("%d",&byte);int next=(head+1)%5;if(next!=tail){head=next;accepted++;}}printf("%d\n",accepted);`,[['3 1 2 3','3'],['6 1 2 3 4 5 6','4']],'next!=tail','next==tail','环形缓冲区满'),
+   writeTask('模拟串口帧：输入 n 个 0..255 字节，统计值为 170（0xAA）的帧头个数。',String.raw`int n,count=0;scanf("%d",&n);for(int i=0;i<n;i++){unsigned b;scanf("%u",&b);if(b==170u)count++;}printf("%d\n",count);`,[['5 170 1 170 0 2','2'],['3 1 2 3','0']],'UART 字节流')],
+  [fixTask('输入四个 12 位 ADC 样本，输出中间两项的平均值；修复加法优先级。',String.raw`unsigned a,b,c,d;scanf("%u%u%u%u",&a,&b,&c,&d);printf("%u\n",(b+c)/2u);`,[['0 1000 2000 4095','1500'],['1 1 3 4','2']],'(b+c)/2u','b+c/2u','整数平均'),
+   writeTask('输入 0..4095 的 ADC 码值，按 3300 mV 参考电压换算整数毫伏并输出。',String.raw`unsigned raw;scanf("%u",&raw);printf("%u\n",raw*3300u/4095u);`,[['0','0'],['4095','3300'],['2048','1650']],'ADC 毫伏换算')],
+  [fixTask('输入定时器时钟、预分频值 PSC 和自动重装值 ARR，输出 PWM 频率 clock/(PSC+1)/(ARR+1)；修复分母。',String.raw`unsigned clock,psc,arr;scanf("%u%u%u",&clock,&psc,&arr);printf("%u\n",clock/(psc+1u)/(arr+1u));`,[['1000000 9 99','1000'],['8000 0 7','1000']],'psc+1u','psc','预分频器'),
+   writeTask('输入比较值 compare 和周期 ticks（均为正且 compare<=ticks），输出向下取整的占空比百分数。',String.raw`unsigned cmp,ticks;scanf("%u%u",&cmp,&ticks);printf("%u\n",cmp*100u/ticks);`,[['25 100','25'],['1 8','12']],'PWM 占空比')],
+  [fixTask('传感器传来高、低两个十六进制字节，合成有符号 16 位数后输出；修复高字节位置。',String.raw`unsigned hi,lo;scanf("%x%x",&hi,&lo);unsigned raw=(hi<<8)|lo;int value=(raw&0x8000u)?(int)raw-65536:(int)raw;printf("%d\n",value);`,[['00 7F','127'],['FF FF','-1']],'hi<<8','hi<<4','协议字节序'),
+   writeTask('输入 3 个十六进制字节，按异或校验计算并以两位大写十六进制输出校验字节。',String.raw`unsigned a,b,c;scanf("%x%x%x",&a,&b,&c);printf("%02X\n",(a^b^c)&255u);`,[['12 34 56','70'],['FF FF 00','00']],'SPI/I2C 校验字节')],
+  [fixTask('模拟循环状态机：输入初始状态 0..2 和 tick 次数；每次 tick 状态加一并在 2 后回到 0；修复回绕。',String.raw`int state,n;scanf("%d%d",&state,&n);for(int i=0;i<n;i++)state=(state+1)%3;printf("%d\n",state);`,[['0 1','1'],['2 1','0'],['1 5','0']],'(state+1)%3','(state+1)%4','状态转换'),
+   writeTask('模拟电机状态：输入 start、stop、fault 三个标志；fault 优先输出 error，其次 stop 输出 idle，其次 start 输出 run，否则 idle。',String.raw`int start,stop,fault;scanf("%d%d%d",&start,&stop,&fault);if(fault)puts("error");else if(stop)puts("idle");else if(start)puts("run");else puts("idle");`,[['1 0 0','run'],['1 1 0','idle'],['1 0 1','error']],'事件优先级')],
+  [fixTask('模拟 DMA 数据只有完成标志为 1 才可读；输入 complete、有效长度与字节，完成则求和，否则输出 wait。修复过早读取。',String.raw`int done,n,sum=0;scanf("%d%d",&done,&n);for(int i=0;i<n;i++){int x;scanf("%d",&x);if(done)sum+=x;}if(done)printf("%d\n",sum);else puts("wait");`,[['0 3 1 2 3','wait'],['1 3 1 2 3','6']],'if(done)sum+=x;','if(!done)sum+=x;','DMA 完成检查'),
+   writeTask('模拟双缓冲：输入 active（当前 DMA 写入缓冲区编号 0/1）与 complete（0/1）；完成后输出 CPU 应读取的缓冲区编号，未完成输出 -1。',String.raw`int active,complete;scanf("%d%d",&active,&complete);printf("%d\n",complete?active:-1);`,[['0 1','0'],['1 1','1'],['0 0','-1']],'DMA 缓冲区所有权')],
+  [fixTask('静态全局变量默认清零、有初值变量保持初值；输出 zero initialized。修复错误初值。',String.raw`printf("%d %d\n",zero,initialized);`,[['','0 7']],'initialized=7','initialized=8','启动时数据初始化','#include <stdio.h>\nstatic int zero;\nstatic int initialized=7;'),
+   writeTask('模拟启动顺序，依次输出 reset、data、main，每一步单独用 puts。',String.raw`puts("reset");puts("data");puts("main");`,[['','reset data main']],'启动流程')],
+  [fixTask('采样与通信都成功才允许模拟喂狗，输入两个成功标志，输出 feed 或 safe；修复过宽条件。',String.raw`int sample_ok,comm_ok;scanf("%d%d",&sample_ok,&comm_ok);puts(sample_ok&&comm_ok?"feed":"safe");`,[['1 1','feed'],['1 0','safe'],['0 1','safe']],'sample_ok&&comm_ok','sample_ok||comm_ok','看门狗健康检查'),
+   writeTask('输入连续 5 轮任务成功状态（0/1）；只有连续两轮都成功才喂狗一次，输出总喂狗次数。',String.raw`int prev=0,count=0;for(int i=0;i<5;i++){int ok;scanf("%d",&ok);if(prev&&ok)count++;prev=ok;}printf("%d\n",count);`,[['1 1 0 1 1','2'],['1 1 1 1 1','4'],['0 0 0 0 0','0']],'健康状态与喂狗')]
+];
+
+// 课后实操与课堂题使用不同题库、不同完成记录。
+function ensureIndependentState(){
+  state.independentPractice=state.independentPractice||[];
+  state.independentWrong=state.independentWrong||[];
+  state.independentDrafts=state.independentDrafts||{};
+}
+ensureIndependentState();
+const independentTotal=independentPractice.length*2;
+const phaseNames=['','第一阶段 · 基础语法','第二阶段 · 核心语法','第三阶段 · 进阶与面试重点','第四阶段 · 实战','第五阶段 · STM32 与电子信息'];
+const practiceCard=$('#practiceLessonSelect').closest('.card');
+practiceCard.querySelector('h3').textContent=`课后独立实操 · ${independentTotal} 题`;
+practiceCard.querySelector('.row p').textContent='学完一课，再做两道新的改错和编程题；题目与课堂随堂练习不同，成绩也分别保存。';
+practiceCard.querySelector('.row .tag').textContent=`${lessons.length} 课 × 2`;
+$('#page-practice .sectionhead p').textContent=`按教学阶段选择课程，完成每课两道独立实操题；下方还有 ${exercises.length} 道综合题。代码在线编译后按输出判分。`;
+$('#page-practice > .card:last-child p').textContent='课后独立题与课堂随堂题分别记录。答错会进入错题本，可查看编译报错、预期输出和参考代码，再返回原题重做。';
+$('#pExercises').nextElementSibling.textContent='练习掌握（含课堂题）';
+
+renderLessonPractice=function(){
+  ensureIndependentState();
+  const select=$('#practiceLessonSelect'),list=$('#lessonPracticeList');
+  select.innerHTML=[1,2,3,4,5].map(phase=>`<optgroup label="${phaseNames[phase]}">${lessons.map((lesson,i)=>lesson.phase===phase?`<option value="${i}" ${i===selectedPracticeLesson?'selected':''}>第 ${i+1} 课 · ${esc(lesson.title)}</option>`:'').join('')}</optgroup>`).join('');
+  select.onchange=()=>{selectedPracticeLesson=Number(select.value);renderLessonPractice()};
+  const i=selectedPracticeLesson;
+  $('#practiceLessonTitle').innerHTML=`第 ${i+1} 课 · ${esc(lessons[i].title)} <span class="tag ${state.done.includes(i)?'green':'amber'}">${state.done.includes(i)?'已学完本课':'建议先学完本课'}</span>`;
+  list.innerHTML=independentPractice[i].map((check,k)=>{
+    const id=`${i}:${k}`,passed=state.independentPractice.includes(id),draft=state.independentDrafts[id];
+    const sample=check.cases.map(([input,output],j)=>`<div>样例 ${j+1}：输入 <code>${esc(input||'（无输入）')}</code> → 输出 <code>${esc(output)}</code></div>`).join('');
+    return `<article class="card exercise" id="courseExercise${k}"><div class="row"><span class="tag">${k===0?'新改错题':'新编程题'}</span><span class="tag ${passed?'green':''}">${passed?'已通过':'待完成'}</span></div><h3 style="margin-top:10px">${k===0?'修复代码':'独立完成'} · ${esc(lessons[i].title)}</h3><p>${esc(check.prompt)}</p><details><summary>查看输入输出样例</summary>${sample}</details><textarea id="courseCode${k}" spellcheck="false" aria-label="${k===0?'改错题':'编程题'}代码" placeholder="写完整 C 程序…">${esc(draft===undefined?(k===0?check.broken:''):draft)}</textarea><div class="toolbar" style="margin-top:8px"><button class="btn primary" data-course-submit="${k}">编译并判题</button><span class="muted">重点：${esc(check.focus.join('、'))}</span></div><div class="feedback" id="courseFeedback${k}"></div><details class="answer"><summary>参考代码（建议提交后查看）</summary><pre>${esc(check.answer)}</pre></details></article>`;
+  }).join('');
+  $$('[data-course-submit]').forEach(button=>button.onclick=()=>submitCourseExercise(selectedPracticeLesson,Number(button.dataset.courseSubmit)));
+  $$('#lessonPracticeList textarea').forEach((area,k)=>area.oninput=()=>{state.independentDrafts[`${selectedPracticeLesson}:${k}`]=area.value;localStorage.setItem(KEY,JSON.stringify(state))});
+};
+
+submitCourseExercise=async function(i,k){
+  ensureIndependentState();
+  const check=independentPractice[i][k],id=`${i}:${k}`,area=$(`#courseCode${k}`),button=$(`[data-course-submit="${k}"]`),target=$(`#courseFeedback${k}`),code=area.value.trim();
+  if(!code){target.innerHTML='<span class="wrong">先写完整 C 程序。</span>';return}
+  state.independentDrafts[id]=code;localStorage.setItem(KEY,JSON.stringify(state));
+  button.disabled=true;button.textContent='正在编译…';target.textContent='正在发送到在线判题服务…';
+  const outcome=await judgeCode(code,check.cases);
+  if(outcome.type==='pass'){
+    if(!state.independentPractice.includes(id))state.independentPractice.push(id);
+    state.independentWrong=state.independentWrong.filter(value=>value!==id);
+    save();
+    button.closest('.exercise').querySelector('.row .tag:last-child').textContent='已通过';
+    button.closest('.exercise').querySelector('.row .tag:last-child').classList.add('green');
+  }else if(outcome.type!=='network'){
+    state.independentPractice=state.independentPractice.filter(value=>value!==id);
+    if(!state.independentWrong.includes(id))state.independentWrong.push(id);
+    save();
+  }
+  target.innerHTML=outcomeHtml(outcome,check.answer,false);
+  button.disabled=false;button.textContent='编译并判题';
+  toast(outcome.type==='pass'?'本题通过':outcome.type==='network'?'判题服务暂不可用':'请查看报错与参考代码');
+};
+
+const previousRenderProgress=renderProgress;
+renderProgress=function(){
+  ensureIndependentState();
+  previousRenderProgress();
+  const learned=state.lessonPractice.length,independent=state.independentPractice||[],wrong=state.independentWrong||[];
+  const allDone=learned+independent.length+state.practice.length;
+  const allTotal=lessonChecks.length*2+independentTotal+exercises.length;
+  $('#statExercises').textContent=`${allDone} / ${allTotal}`;
+  $('#pExercises').textContent=`${allDone} / ${allTotal}`;
+  $('#practiceCount').textContent=`${independent.length+state.practice.length} / ${independentTotal+exercises.length} 已掌握`;
+  const totalWrong=state.wrong.length+state.practiceWrong.length+state.lessonWrong.length+(state.examWrongV2||[]).length+wrong.length;
+  $('#statWrong').textContent=totalWrong;$('#pWrong').textContent=totalWrong;
+  if(wrong.length){
+    const list=$('#wrongList');
+    if(list.querySelector('.empty'))list.querySelector('.empty').remove();
+    list.insertAdjacentHTML('beforeend',`<h4>课后独立实操 · ${wrong.length} 题</h4>${wrong.map(id=>{const [i,k]=id.split(':').map(Number),check=independentPractice[i]?.[k];return check?`<div class="qitem row"><div><span class="tag amber">第 ${i+1} 课 · ${k===0?'改错':'编程'}</span><div>${esc(check.prompt)}</div></div><button class="btn" data-redo-independent="${id}">返回原题</button></div>`:''}).join('')}`);
+    $$('[data-redo-independent]').forEach(button=>button.onclick=()=>{const [i,k]=button.dataset.redoIndependent.split(':').map(Number);selectedPracticeLesson=i;showPage('practice');renderLessonPractice();requestAnimationFrame(()=>$('#courseExercise'+k).scrollIntoView({behavior:'smooth',block:'center'}))});
+  }
+};
+$('#clearWrong').addEventListener('click',()=>{state.independentWrong=[];save()});
+
 renderLessonList();renderLesson();renderExercises();renderQuiz();renderProgress();
 </script>
 </body>
